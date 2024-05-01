@@ -1,0 +1,61 @@
+#  Version
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    restart: always
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - backend
+
+
+  front-end:
+    container_name: front-end-react
+    restart: unless-stopped
+    image: frontend-react
+    build:
+      context: front-end
+      target: production
+      dockerfile: Dockerfile
+
+    ports:
+      - "3000:3000"   
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
+
+  back-end:
+    container_name: back-end-users
+    restart: unless-stopped
+    image: back-end_image1
+    build:
+      context: back-end
+      target: production
+      dockerfile: Dockerfile
+
+    ports:
+      - "8448:8448"   
+    networks:
+      - shared-network
+    depends_on:
+      - front-end      
+
+
+      
+
+networks:
+  shared-network:
+
+
+  
+
