@@ -1,13 +1,24 @@
 version: '3.9'
 
 services:
+  front-end:
+    container_name: front-end-react
+    restart: unless-stopped
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    ports:
+      - "8448:3000"
+    networks:
+      - app-network
+
   edit-view-run-ms:
     container_name: edit-view-run-ms
     build:
       context: ./edit-view-run-ms
       dockerfile: Dockerfile
     ports:
-      - "3000:7000"
+      - "4000:7000"
     env_file:
       - ./edit-view-run-ms/.env
     networks:
@@ -19,7 +30,7 @@ services:
       context: ./login-ms
       dockerfile: Dockerfile
     ports:
-      - "3001:7001"
+      - "4001:7001"
     env_file:
       - ./login-ms/.env
     networks:
@@ -31,7 +42,7 @@ services:
       context: ./view-results-ms
       dockerfile: Dockerfile
     ports:
-      - "3002:7002"
+      - "4002:7002"
     env_file:
       - ./view-results-ms/.env
     networks:
