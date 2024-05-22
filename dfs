@@ -1,0 +1,140 @@
+
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    restart: always
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    ports:
+      - "27017:27017"  # MongoDB typically runs on port 27017, not 5432
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - shared-network
+
+  front-end:
+    container_name: front-end-react
+    restart: unless-stopped
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    ports:
+      - "3000:8448"
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
+  back-end:
+    container_name: back-end-users
+    restart: unless-stopped
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    ports:
+      - "4000:1188"  # Adjusted to reflect your earlier description (4000 external, 1188 internal)
+    networks:
+      - shared-network
+    depends_on:
+      - mongodb
+
+networks:
+  shared-network:
+
+volumes:
+  mongodb-data:
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////
+
+version: '3.9'
+
+services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  login-ms:
+    container_name: login-ms
+    build:
+      context: ./login-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./backend_MS/login-ms/.env
+    networks:
+      - app-network
+
+  submit-problem-ms:
+    container_name: submit-problem-ms
+    build:
+      context: ./submit-problem-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+    networks:
+      - app-network
+
+  edit-view-run-ms:
+    container_name: edit-view-run-ms
+    build:
+      context: ./edit-view-run-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3000"
+    environment:
+      - MONGO_URI=mongodb+srv://admin:<password>@cluster0.mongodb.net/submittedproblemsdb?retryWrites=true&w=majority
+      - RABBITMQ_URL=amqp://rabbitmq
+    networks:
+      - app-network
+
+  queue-ms:
+    image: rabbitmq:management
+    ports:
+      - "15672:15672"  # RabbitMQ Management UI
+      - "5672:5672"    # RabbitMQ AMQP
+    networks:
+      - app-network
+
+  solver-ms:
+    container_name: solver-ms
+    build:
+      context: ./solver-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3000"
+    environment:
+      - MONGO_URI=mongodb+srv://admin:<password>@cluster0.mongodb.net/executedproblemsdb?retryWrites=true&w=majority
+      - RABBITMQ_URL=amqp://rabbitmq
+    networks:
+      - app-network
+
+  view-results-ms:
+    container_name: view-results-ms
+    build:
+      context: ./view-results-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

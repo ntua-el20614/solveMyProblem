@@ -1,48 +1,55 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  mongodb:
-    image: mongo:4.4
-    restart: always
-    container_name: mongodb
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin123
+  edit-view-run-ms:
+    container_name: edit-view-run-ms
+    build:
+      context: ./edit-view-run-ms
+      dockerfile: Dockerfile
     ports:
-      - "27017:27017"  # MongoDB typically runs on port 27017, not 5432
+      - "3000:7000"
+    env_file:
+      - ./edit-view-run-ms/.env
+    networks:
+      - app-network
+
+  login-ms:
+    container_name: login-ms
+    build:
+      context: ./login-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3001:7001"
+    env_file:
+      - ./login-ms/.env
+    networks:
+      - app-network
+
+  view-results-ms:
+    container_name: view-results-ms
+    build:
+      context: ./view-results-ms
+      dockerfile: Dockerfile
+    ports:
+      - "3002:7002"
+    env_file:
+      - ./view-results-ms/.env
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
     volumes:
-      - mongodb-data:/data/db
-    networks:
-      - shared-network
-
-  front-end:
-    container_name: front-end-react
-    restart: unless-stopped
-    build:
-      context: ./front-end
-      dockerfile: Dockerfile
-    ports:
-      - "3000:8448"
-    networks:
-      - shared-network
-    depends_on:
-      - mongodb
-
-  back-end:
-    container_name: back-end-users
-    restart: unless-stopped
-    build:
-      context: ./back-end
-      dockerfile: Dockerfile
-    ports:
-      - "4000:1188"  # Adjusted to reflect your earlier description (4000 external, 1188 internal)
-    networks:
-      - shared-network
-    depends_on:
-      - mongodb
-
-networks:
-  shared-network:
+      - mongo-data:/data/db
 
 volumes:
-  mongodb-data:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
