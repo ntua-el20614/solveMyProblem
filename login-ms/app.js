@@ -12,7 +12,15 @@ app.use(express.urlencoded({ extended: true }));
 // Connect to MongoDB using the URI from the .env file
 const mongoUri = process.env.MONGO_URI;
 
-const SubProbConnection = mongoose.createConnection(mongoUri);
+mongoose.connect(mongoUri)
+  .then(() => {
+    console.log('Connected to Database');
+  })
+  .catch(err => {
+    console.error('Failed to connect to Database', err);
+  });
+
+/*const SubProbConnection = mongoose.createConnection(mongoUri);
 
 SubProbConnection.on('connected', () => {
     console.log('Connected to Database');
@@ -20,7 +28,7 @@ SubProbConnection.on('connected', () => {
   
   SubProbConnection.on('error', (err) => {
     console.error('Failed to connect to Database', err);
-  });
+  });*/
 
 // Routes
 app.use('/', routes);
