@@ -20,7 +20,7 @@ COPY . .
 COPY .env .env
 
 # Expose the port on which the application will run
-EXPOSE 3000
+EXPOSE 7777
 
 # Start the application
 CMD ["node", "server.js"]
