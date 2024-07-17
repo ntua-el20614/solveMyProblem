@@ -1,6 +1,15 @@
 version: '3.9'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    
+    
+
   front-end:
     container_name: front-end-react
     restart: unless-stopped
@@ -25,16 +34,16 @@ services:
       - app-network
 
   login-ms:
-    container_name: login-ms
-    build:
-      context: ./login-ms
-      dockerfile: Dockerfile
+    build: ./login-ms
     ports:
-      - "4001:7001"
-    env_file:
-      - ./login-ms/.env
-    networks:
-      - app-network
+      - "7001:7001"
+    environment:
+      - MONGO_URI=mongodb+srv://admin:admin@clustoras.euahga5.mongodb.net/Users?retryWrites=true&w=majority
+      - JWT_SECRET=8O6euTCP0MC4HaifFBpEhHzteHnkfgIkK4MHORiEtos=
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mongo
+      - rabbitmq
 
   view-results-ms:
     container_name: view-results-ms
@@ -59,17 +68,7 @@ services:
       - mongo-data:/data/db
   
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
-    networks:
-      - app-network
+  
 
 volumes:
   mongo-data:

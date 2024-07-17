@@ -1,8 +1,10 @@
 const express = require('express');
-const testController = require('../Controllers/Controller');
+const Controller = require('../Controllers/Controller');
 
 const router = express.Router();
 
-router.get('/test', testController.test_endpoint);
+router.get('/test', Controller.test_endpoint);
+router.post('/submit', Controller.submitProblem);
 
 module.exports = router;
+
