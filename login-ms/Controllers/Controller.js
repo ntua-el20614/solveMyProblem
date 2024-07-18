@@ -2,12 +2,17 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { publishToQueue } = require('../rabbitmq');
+const { consumeFromQueue } = require('../rabbitmq');
 
 exports.test_endpoint = async (req, res) => {
   try {
-    res.status(200).json({ message: 'Test endpoint' });
+    consumeFromQueue('user_actions', (message) => {
+      console.log('Received message from queue:', message);
+      res.status(200).json({ message: 'Test endpoint', queueMessage: message });
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error in test_endpoint:', error);
+    res.status(500).json({ message: 'Internal server error', error });
   }
 };
 
