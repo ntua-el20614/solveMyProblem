@@ -66,7 +66,7 @@ exports.authenticateUser = async (req, res, next) => {
     console.log('Generated token:', token);
 
     // Publish the token to the RabbitMQ queue
-    const message = JSON.stringify({ username: user.username, action: 'login' });
+    const message = JSON.stringify({ username: user.username});
     publishToQueue('user_actions', message);
     console.log('Published message to queue:', message);
     // Respond with a 200 status and include the token

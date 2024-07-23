@@ -2,10 +2,19 @@
 
 const amqp = require('amqplib/callback_api');
 
-exports.connectRabbitMQ = () => {
-  amqp.connect('amqp://localhost', (err, conn) => {
+
+let channel = null;
+const rabbitURI = process.env.RABBITMQ_URL;
+let latestUsername = null;
+
+exports.connectRabbitMQ = (retries = 5) => {
+  amqp.connect(rabbitURI, (err, conn) => {
     if (err) {
       console.error('Failed to connect to RabbitMQ', err);
+      if (retries > 0) {
+        console.log(`Retrying... (${retries} attempts left)`);
+        setTimeout(() => exports.connectRabbitMQ(retries - 1), 5000); // Retry after 5 seconds
+      }
       return;
     }
     conn.createChannel((err, ch) => {
@@ -13,16 +22,19 @@ exports.connectRabbitMQ = () => {
         console.error('Failed to create a channel', err);
         return;
       }
+      channel = ch;
+      console.log('Connected to RabbitMQ');
+
       const queueName = 'user_actions';
-      ch.assertQueue(queueName, { durable: true });
+      channel.assertQueue(queueName, { durable: true });
       console.log('Waiting for messages in %s', queueName);
 
-      ch.consume(queueName, (msg) => {
+      channel.consume(queueName, (msg) => {
         if (msg !== null) {
           const messageContent = msg.content.toString();
           console.log('Received message:', messageContent);
-          handleMessage(JSON.parse(messageContent));
-          ch.ack(msg);
+          exports.handleMessage(JSON.parse(messageContent));
+          channel.ack(msg);
         }
       });
     });
@@ -30,15 +42,15 @@ exports.connectRabbitMQ = () => {
 };
 
 exports.handleMessage = (message) => {
-  // Handle the message (e.g., save to database)
   console.log('Handling message:', message);
 
-  if (message.action === 'login') {
-    // Logic to handle login action
+  if (message.username) {
     console.log(`User ${message.username} logged in.`);
-    // You can save the message to the database or perform other actions
+    latestUsername = message.username;
   }
 };
+
+exports.getLatestUsername = () => latestUsername;
 
 /*module.exports = {
   connectRabbitMQ,
