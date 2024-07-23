@@ -1,0 +1,953 @@
+ChatGPT 4
+
+
+
+ifor some reason the app.css isnt imported in loginpage and also the page for login has some issues,
+
+take a look:
+App.js:
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import './App.css';
+
+import Landingpage from './login/Landingpage';
+import LoginPage from './login/Loginpage';
+import Homepage from './homepage/Homepage';
+import Newsubmission from './submissions/Newsubmission';
+import Editsubmission from './submissions/Editsubmission';
+import Viewresults from './submissions/Viewresults';
+import Credits from './credits/Credits';
+import { Header, Footer } from './components/HeaderFooter';
+
+function App() {
+  return (
+      <Router>
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Header />
+              <div style={{ flex: '1', overflow: 'hidden' }}>
+                  <Routes>
+                      <Route path="/" element={<Landingpage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/homepage" element={<Homepage />} />
+                      <Route path="/new_submission" element={<Newsubmission />} />
+                      <Route path="/edit_submission" element={<Editsubmission />} />
+                      <Route path="/view_results" element={<Viewresults />} />
+                      <Route path="/my_credits" element={<Credits />} />
+                  </Routes>
+              </div>
+              <Footer />
+          </div>
+      </Router>
+  );
+}
+
+export default App;
+
+LandingPage.js:
+
+import React from 'react';
+import StyledButton from '../components/Button'; // Adjust the path based on your project structure
+import '../App.css';
+
+function LandingPage() {
+    return (
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <p>Welcome to our application! Click the button below to log in.</p>
+            <StyledButton to="/login">Take me to login page</StyledButton>
+        </div>
+    );
+}
+
+export default LandingPage;
+
+
+And this is Loginpage.js:
+import React, { useState } from 'react';
+import StyledButton from '../components/Button';
+import '../App.css';
+
+function LoginPage() {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch('http://localhost:4001/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('Failed to login:', error);
+        }
+    };
+
+    const formStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '50px auto',
+        padding: '20px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        width: '300px',
+        backgroundColor: 'white',
+    };
+
+    const inputStyle = {
+        margin: '10px 0',
+        padding: '10px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        width: '100%',
+    };
+
+    const labelStyle = {
+        textAlign: 'left',
+        width: '100%',
+        fontWeight: 'bold',
+    };
+
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f0f0' }}>
+            <form onSubmit={handleLogin} style={formStyle}>
+                <label style={labelStyle}>
+                    Username:
+                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+                </label>
+                <label style={labelStyle}>
+                    Password:
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+                </label>
+                <StyledButton as="button" type="submit" style={{ margin: '10px 0' }}>Login</StyledButton>
+                <StyledButton to={'/'} style={{ margin: '10px 0' }}>Cancel</StyledButton>
+            </form>
+        </div>
+    );
+}
+
+export default LoginPage;
+
+
+ChatGPT
+It looks like you've run into issues with your CSS not being applied correctly to your LoginPage, and possibly some other issues with the page functionality itself. Here’s a systematic approach to troubleshoot and potentially fix these issues:
+
+1. CSS Import and Application
+Ensure that the CSS is correctly imported and the styles are written correctly within App.css. The import statements you've provided seem correct. If the CSS isn't applying, check the following:
+
+Specificity and Overriding: Ensure that no other styles are overriding the App.css styles due to higher specificity or later imports.
+Cascading Order: Check if there are any inline styles or other CSS files that might be loaded after App.css that could override the styles.
+Browser Cache: Sometimes browsers cache CSS files aggressively. Try clearing your browser cache or doing a hard reload.
+2. Check File Paths
+Ensure that all import paths are correct. You’ve structured your imports like import '../App.css'; which implies that LoginPage.js and LandingPage.js are nested inside some folder one level deep from the root where App.css is. Confirm that the directory structure matches this setup.
+
+3. React Router and Page Rendering
+Make sure that the LoginPage is being correctly routed and rendered:
+
+Routing: Verify the path in <Route path="/login" element={<LoginPage />} /> matches the expected URL you are navigating to.
+Link Component: In LandingPage, you are using StyledButton to navigate to the login page. Make sure that StyledButton is properly set up to handle routing. If StyledButton is supposed to act like a Link from react-router-dom, check its implementation. Sometimes custom button components do not handle routing unless explicitly designed to do so.
+4. Login Functionality
+Your LoginPage handles the login with an asynchronous function which looks syntactically correct. However:
+
+Network Issues: Ensure your backend server at http://localhost:4001/login is up and running. Check the network tab in your browser's developer tools to see if the request is made and what response is received.
+Error Handling: Add more robust error handling in the login function to catch and display meaningful error messages which can help in debugging.
+5. General Debugging Tips
+Console Logs: Add console.log statements to critical points in your code, like right after imports, inside the render method, and inside your login function to ensure all parts are executing.
+React Developer Tools: Use React Developer Tools extension for Chrome or Firefox to inspect component hierarchies and props/state.
+6. Styling Consistency
+Make sure that the styles applied within individual components like LoginPage do not unintentionally reset or negate styles set by App.css. This can often happen especially with generic names or high-specificity selectors in CSS.
+
+If you have specific error messages or behavior that’s not accounted for here, those details could help further narrow down the issue.
+
+give me the code
+ChatGPT
+Here's a revised version of your code to ensure better management and import handling, which may resolve some of the issues you're facing with CSS and the LoginPage functionality:
+
+Revised App.js
+This version ensures proper routing and CSS import:
+
+javascript
+Copy code
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+
+import LandingPage from './login/LandingPage'; // Corrected component name based on your file
+import LoginPage from './login/LoginPage';
+import Homepage from './homepage/Homepage';
+import NewSubmission from './submissions/NewSubmission';
+import EditSubmission from './submissions/EditSubmission';
+import ViewResults from './submissions/ViewResults';
+import Credits from './credits/Credits';
+import { Header, Footer } from './components/HeaderFooter';
+
+function App() {
+  return (
+    <Router>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Header />
+        <div style={{ flex: '1', overflow: 'hidden' }}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/homepage" element={<Homepage />} />
+            <Route path="/new_submission" element={<NewSubmission />} />
+            <Route path="/edit_submission" element={<EditSubmission />} />
+            <Route path="/view_results" element={<ViewResults />} />
+            <Route path="/my_credits" element={<Credits />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+Revised LoginPage.js
+Ensure you are importing StyledButton correctly and it handles routing properly. The form and styles are kept intact:
+
+javascript
+Copy code
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic navigation
+import StyledButton from '../components/Button';
+import '../App.css';
+
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // For navigating after successful login
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:4001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        navigate('/homepage'); // Navigate to homepage on successful login
+      } else {
+        throw new Error(data.message || "Failed to login");
+      }
+    } catch (error) {
+      console.error('Failed to login:', error);
+    }
+  };
+
+  const formStyle = { /* style object */ };
+  const inputStyle = { /* style object */ };
+  const labelStyle = { /* style object */ };
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f0f0' }}>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <label style={labelStyle}>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+        </label>
+        <label style={labelStyle}>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+        </label>
+        <StyledButton as="button" type="submit">Login</StyledButton>
+        <StyledButton to="/" style={{ margin: '10px 0' }}>Cancel</StyledButton>
+      </form>
+    </div>
+  );
+}
+
+export default LoginPage;
+These updates ensure that your components use correct imports, the StyledButton component (if it’s meant to act like a Link, make sure it’s either extending Link from react-router-dom or using it internally), and that CSS styles are imported properly. If StyledButton doesn't navigate correctly, you might need to check its implementation or replace it with a regular Link or useNavigate as needed.
+
+the button Take me to login page is hiding behind the header
+ChatGPT
+If the button "Take me to login page" on your LandingPage is hiding behind the header, it suggests a CSS positioning or z-index issue. Here are a few steps to resolve this problem:
+
+1. Check the Z-index of Header and Main Content
+Ensure that the z-index of the header is not unintentionally making it overlap over the content below. You can also adjust the z-index of the main content area to ensure it's always on top if needed.
+
+2. Adjust Margin or Padding
+Since your header might be using position: fixed or position: absolute, the main content (like your LandingPage) might be flowing under it. Increase the top margin or padding of the main content to push it down below the header.
+
+Here's an example of how you can adjust your CSS:
+
+Updated CSS for App.css
+You might need to adjust the values based on your actual header height.
+
+css
+Copy code
+/* Assuming your header has a fixed or absolute position */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* High z-index to keep it above other content */
+}
+
+.main-content {
+    padding-top: 70px; /* Adjust this value based on your actual header height */
+    flex: 1;
+    overflow: hidden;
+}
+3. Apply the Updated Styles
+Update your App.js to use these styles properly:
+
+Modified App.js with class or style adjustments
+javascript
+Copy code
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+
+import LandingPage from './login/LandingPage';
+import LoginPage from './login/LoginPage';
+import Homepage from './homepage/Homepage';
+import NewSubmission from './submissions/NewSubmission';
+import EditSubmission from './submissions/EditSubmission';
+import ViewResults from './submissions/ViewResults';
+import Credits from './credits/Credits';
+import { Header, Footer } from './components/HeaderFooter';
+
+function App() {
+  return (
+    <Router>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Header />
+        <div className="main-content"> {/* Updated class here */}
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/homepage" element={<Homepage />} />
+            <Route path="/new_submission" element={<NewSubmission />} />
+            <Route path="/edit_submission" element={<EditSubmission />} />
+            <Route path="/view_results" element={<ViewResults />} />
+            <Route path="/my_credits" element={<Credits />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+4. Adjust LandingPage Layout
+Ensure that LandingPage uses the adjusted styles or classes as needed. This might involve adding similar classes or inline styles that respect the space taken by the header.
+
+By implementing these changes, you should be able to ensure that your "Take me to login page" button and other main content are not obscured by the header.
+
+take a look:
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+
+import LandingPage from './login/Landingpage'; // Corrected component name based on your file
+import LoginPage from './login/Loginpage';
+import Homepage from './homepage/Homepage';
+import NewSubmission from './submissions/Newsubmission';
+import EditSubmission from './submissions/Editsubmission';
+import ViewResults from './submissions/Viewresults';
+import Credits from './credits/Credits';
+import { Header, Footer } from './components/HeaderFooter';
+
+function App() {
+    return (
+      <Router>
+        <div>
+          <Header />
+          <div className="main-content">
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/homepage" element={<Homepage />} />
+              <Route path="/new_submission" element={<NewSubmission />} />
+              <Route path="/edit_submission" element={<EditSubmission />} />
+              <Route path="/view_results" element={<ViewResults />} />
+              <Route path="/my_credits" element={<Credits />} />
+            </Routes>
+          </div>
+          <Footer />
+        </div>
+      </Router>
+    );
+  }
+  
+  export default App;
+
+
+i since the elements sometimes might make the page need scrolling, i want you to make it so that the area of the page that these elements take will not be below the header and footer
+ChatGPT
+To ensure that your main content is displayed between the header and the footer without any overlap and maintains proper scrolling behavior, you can adjust the CSS styles. Here's how to set up your layout to ensure the main content area is always visible between the header and footer, even when scrolling is necessary:
+
+CSS Adjustments
+Flexbox Layout: You can use a flexbox layout for the main container to keep the header at the top, the footer at the bottom, and the main content in between.
+Viewport Height: Use min-height in percentage or viewport units to ensure the main content uses the available space minus the height of the header and footer.
+Revised App.css
+This CSS assumes your Header and Footer have a fixed height. If the heights are dynamic, you may need JavaScript to adjust the padding dynamically or use CSS variables set via JavaScript.
+
+css
+Copy code
+/* App.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#root, .app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  flex-shrink: 0; /* Ensures the header doesn't shrink */
+}
+
+.main-content {
+  flex-grow: 1; /* Takes up all available space */
+  overflow-y: auto; /* Adds scroll to the main content only */
+  padding-top: 50px; /* Adjust based on your header's height */
+  padding-bottom: 50px; /* Adjust based on your footer's height */
+}
+
+.footer {
+  flex-shrink: 0; /* Ensures the footer doesn't shrink */
+}
+Update App.js with Proper Classes or Styles
+Make sure to apply these styles properly in your React component:
+
+javascript
+Copy code
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+
+import LandingPage from './login/Landingpage';
+import LoginPage from './login/Loginpage';
+import Homepage from './homepage/Homepage';
+import NewSubmission from './submissions/Newsubmission';
+import EditSubmission from './submissions/Editsubmission';
+import ViewResults from './submissions/Viewresults';
+import Credits from './credits/Credits';
+import { Header, Footer } from './components/HeaderFooter';
+
+function App() {
+    return (
+      <Router>
+        <div className="app-container"> {/* Ensure the container uses flex */}
+          <Header className="header" />
+          <div className="main-content">
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/homepage" element={<Homepage />} />
+              <Route path="/new_submission" element={<NewSubmission />} />
+              <Route path="/edit_submission" element={<EditSubmission />} />
+              <Route path="/view_results" element={<ViewResults />} />
+              <Route path="/my_credits" element={<Credits />} />
+            </Routes>
+          </div>
+          <Footer className="footer" />
+        </div>
+      </Router>
+    );
+}
+
+export default App;
+With this setup, your page layout should ensure that the main content does not go below the header or above the footer, and it properly scrolls within its container. Adjust the padding top and bottom in the .main-content class based on the actual height of your Header and Footer. If the heights are dynamic, consider a JavaScript-based solution to dynamically set the padding.
+
+give me these:   const formStyle = { /* style object */ };
+  const inputStyle = { /* style object */ };
+  const labelStyle = { /* style object */ };
+ChatGPT
+To create a clean and user-friendly form in your LoginPage component, we can define the styles for formStyle, inputStyle, and labelStyle with clear design principles. Here are suggested styles for each:
+
+formStyle
+This style will ensure the form is centered, has a slight shadow for depth, and is spaced appropriately. It provides a simple and modern look.
+
+javascript
+Copy code
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: '50px auto',
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+  width: '300px',
+  backgroundColor: 'white',
+};
+inputStyle
+This style will make the input fields easy to interact with, visually clear, and aesthetically consistent with modern design standards.
+
+javascript
+Copy code
+const inputStyle = {
+  margin: '10px 0',
+  padding: '10px',
+  borderRadius: '4px',
+  border: '1px solid #ccc',
+  width: '100%',
+};
+labelStyle
+The label style is designed to ensure readability and structural consistency, making it easy for users to identify what information goes into each input field.
+
+javascript
+Copy code
+const labelStyle = {
+  textAlign: 'left',
+  width: '100%',
+  fontWeight: 'bold',
+  marginBottom: '5px', // Adds a little space between the label and the input field
+};
+These styles will help keep your form organized and aesthetically pleasing while maintaining a clear and functional layout. You can apply these styles directly in your React component as shown in the setup below:
+
+javascript
+Copy code
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    // Your login code here
+  };
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f0f0' }}>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <label style={labelStyle}>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+        </label>
+        <label style={labelStyle}>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+        </label>
+        {/* Assuming StyledButton is properly imported and set up */}
+        <StyledButton as="button" type="submit" style={{ margin: '10px 0' }}>Login</StyledButton>
+        <StyledButton to="/" style={{ margin: '10px 0' }}>Cancel</StyledButton>
+      </form>
+    </div>
+  );
+}
+This setup should make your LoginPage both functional and visually appealing.
+
+
+  const inputStyle = {
+    margin: '10px 20px',
+    padding: '10px',
+
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    width: '100%-5px', // Adjusted width to account for padding
+  };
+
+make these be below username and below password, have the width be 100% but it needs some padding on the right cause its connected on the box
+ChatGPT
+It seems like you want to adjust the inputStyle to ensure that the input fields for username and password have appropriate padding and do not touch the borders of their containing box. Here's how you can achieve this:
+
+Revised inputStyle
+To ensure that the input fields occupy 100% width while also having padding and not touching the container borders, you should set the box sizing to border-box. This makes the browser include padding and border in the element's total width and height:
+
+javascript
+Copy code
+const inputStyle = {
+  margin: '10px 20px',
+  padding: '10px',
+  borderRadius: '4px',
+  border: '1px solid #ccc',
+  width: '100%', // This will be the full width including padding and border
+  boxSizing: 'border-box', // Ensures padding and border are included within the width
+};
+Explanation
+Margin: '10px 20px' gives a top and bottom margin of 10px, and left and right margins of 20px. This prevents the input from touching the edges of its container.
+Padding: '10px' all around the input provides a comfortable clickable area, making the form easier to interact with.
+Box Sizing: 'border-box' ensures that the padding and border of the input do not expand beyond the specified 100% width. This is crucial for maintaining layout consistency.
+Applying the Style
+Ensure this style is used within your form inputs correctly. Here’s how you can apply it in your LoginPage component:
+
+javascript
+Copy code
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    // Login code here
+  };
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f0f0' }}>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <label style={labelStyle}>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+        </label>
+        <label style={labelStyle}>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+        </label>
+        <StyledButton as="button" type="submit" style={{ margin: '10px 0' }}>Login</StyledButton>
+        <StyledButton to="/" style={{ margin: '10px 0' }}>Cancel</StyledButton>
+      </form>
+    </div>
+  );
+}
+This setup ensures that the input fields use the full width of their container minus any specified padding and border, providing a clean and professional appearance while maintaining usability.
+
+this is the file:
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic navigation
+import StyledButton from '../components/Button';
+import '../App.css';
+
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // For navigating after successful login
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:4001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        navigate('/homepage'); // Navigate to homepage on successful login
+      } else {
+        throw new Error(data.message || "Failed to login");
+      }
+    } catch (error) {
+      console.error('Failed to login:', error);
+    }
+  };
+
+  const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '50px auto',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    width: '350px',
+    backgroundColor: 'white',
+  };
+
+  const inputStyle = {
+    margin: '10px 20px',
+    padding: '10px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    width: '100%', // This will be the full width including padding and border
+    boxSizing: 'border-box', // Ensures padding and border are included within the width
+  };
+  
+
+  const labelStyle = {
+    textAlign: 'left',
+    width: '100%',
+    fontWeight: 'bold',
+    marginBottom: '5px', // Adds a little space between the label and the input field
+  };
+  
+
+  
+  return (
+    <div style={{ textAlign: 'center', marginTop: '75px' }}>
+        <h2>Login</h2>
+      <form onSubmit={handleLogin} style={formStyle}>
+      <label style={labelStyle}>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+        </label>
+        <label style={labelStyle}>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+        </label>
+        <StyledButton as="button" type="submit">Login</StyledButton>
+        <StyledButton to="/" style={{ margin: '10px 0' }}>Cancel</StyledButton>
+      </form>
+    </div>
+  );
+}
+
+export default LoginPage;
+
+
+i want you to make the input fields have a padding in the formStyle
+ChatGPT
+To add padding to the input fields within the formStyle without affecting the layout and ensuring it still maintains a visually pleasing and functional form, you can update the formStyle object in your LoginPage component. Here's how you can modify the existing formStyle to include padding around the input fields effectively:
+
+Updated formStyle
+You'll want to ensure that this new padding doesn't affect the overall dimensions and positioning of the form unfavorably, especially since your form width is specified. Here’s the updated formStyle:
+
+javascript
+Copy code
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: '50px auto',
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+  width: '350px', // Maintain width to ensure layout does not stretch
+  backgroundColor: 'white',
+  gap: '10px', // Adds space between children components
+};
+In this update:
+
+Padding: Already set at '20px', which affects the inside edge of the form, giving space between the form's border and its contents.
+Gap: Added '10px', which will provide additional spacing between each child component (like labels and inputs) inside the form. This property is quite handy to space out elements vertically in a flex column layout without having to individually manage margins for each child.
+Full Component with Updated formStyle
+Here’s how your full LoginPage component would look with the updated styles:
+
+javascript
+Copy code
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic navigation
+import StyledButton from '../components/Button';
+import '../App.css';
+
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // For navigating after successful login
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:4001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        navigate('/homepage'); // Navigate to homepage on successful login
+      } else {
+        throw new Error(data.message || "Failed to login");
+      }
+    } catch (error) {
+      console.error('Failed to login:', error);
+    }
+  };
+
+  const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '50px auto',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    width: '350px',
+    backgroundColor: 'white',
+    gap: '10px',
+  };
+
+  const inputStyle = {
+    margin: '10px 20px',
+    padding: '10px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    width: '100%',
+    boxSizing: 'border-box',
+  };
+
+  const labelStyle = {
+    textAlign: 'left',
+    width: '100%',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+  };
+
+  return (
+    <div style={{ textAlign: 'center', marginTop: '75px' }}>
+      <h2>Login</h2>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <label style={labelStyle}>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+        </label>
+        <label style={labelStyle}>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+        </label>
+        <StyledButton as="button" type="submit">Login</StyledButton>
+        <StyledButton to="/" style={{ margin: '10px 0' }}>Cancel</StyledButton>
+      </form>
+    </div>
+  );
+}
+
+export default LoginPage;
+This setup keeps the input fields neatly spaced and maintains a modern, clean look for your form while ensuring functional and visual clarity.
+
+lastly make the buttons
+
+        <StyledButton as="button" type="submit">Login</StyledButton>
+        <StyledButton to="/">Cancel</StyledButton>
+
+to be next to eachother, instead one on top of the other
+ChatGPT
+To place the "Login" and "Cancel" buttons next to each other horizontally rather than stacked vertically, you will need to adjust their container styles. Here's how you can modify the styles for your buttons to achieve this layout:
+
+Updated Styles for Button Container
+You should create a new style object that applies a flex layout to the container of the buttons. This will allow the buttons to sit side by side. Here’s an example of how you can define this:
+
+javascript
+Copy code
+const buttonContainerStyle = {
+  display: 'flex',
+  justifyContent: 'center',  // Centers the buttons horizontally
+  alignItems: 'center',      // Aligns the buttons vertically
+  marginTop: '20px',         // Gives some space above the button container
+  gap: '10px'                // Provides space between the buttons
+};
+Apply the New Style in the LoginPage Component
+You can wrap the buttons in a div element that uses this new style. This will ensure the buttons are displayed next to each other. Here's how your form code in the LoginPage component will look:
+
+javascript
+Copy code
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic navigation
+import StyledButton from '../components/Button';
+import '../App.css';
+
+function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // For navigating after successful login
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:4001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        navigate('/homepage'); // Navigate to homepage on successful login
+      } else {
+        throw new Error(data.message || "Failed to login");
+      }
+    } catch (error) {
+      console.error('Failed to login:', error);
+    }
+  };
+
+  const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '50px auto',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    width: '350px',
+    backgroundColor: 'white',
+    gap: '10px',
+  };
+
+  const inputStyle = {
+    margin: '10px 20px',
+    padding: '10px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    width: '100%',
+    boxSizing: 'border-box',
+  };
+
+  const labelStyle = {
+    textAlign: 'left',
+    width: '100%',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+  };
+
+  const buttonContainerStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '20px',
+    gap: '10px'
+  };
+
+  return (
+    <div style={{ textAlign: 'center', marginTop: '75px' }}>
+      <h2>Login</h2>
+      <form onSubmit={handleLogin} style={formStyle}>
+        <label style={labelStyle}>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} />
+        </label>
+        <label style={labelStyle}>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+        </label>
+        <div style={buttonContainerStyle}>
+          <StyledButton as="button" type="submit">Login</StyledButton>
+          <StyledButton to="/">Cancel</StyledButton>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default LoginPage;
+This arrangement ensures that your "Login" and "Cancel" buttons are horizontally aligned next to each other, providing a more traditional and user-friendly layout for form interactions.
+
+
+
+
+
+
+
+
+
+
+ChatGPT can make mistakes. Check important info.
+?
+CSS Import Issues
