@@ -1,26 +1,6 @@
-# Use the official Node.js image as the base image
-FROM node:18-alpine
-
-# Set the working directory inside the container
+FROM python:3.8
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install dependencies
-RUN npm init -y
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application files to the working directory
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 COPY . .
-
-# Copy the .env file
-COPY .env .env
-
-# Expose the port on which the application will run
-EXPOSE 7004
-
-# Start the application
-CMD ["node", "server.js"]
+CMD ["python", "solver.py"]
