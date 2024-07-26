@@ -29,6 +29,9 @@ exports.connectRabbitMQ = (retries = 5) => {
       channel.assertQueue(queueName, { durable: true });
       console.log('Waiting for messages in %s', queueName);
 
+      const problemQueue = 'problem_queue';
+      channel.assertQueue(problemQueue, { durable: true });
+
       channel.consume(queueName, (msg) => {
         if (msg !== null) {
           const messageContent = msg.content.toString();
@@ -51,6 +54,18 @@ exports.handleMessage = (message) => {
 };
 
 exports.getLatestUsername = () => latestUsername;
+
+
+exports.submitProblemToQueue = (problem) => {
+  if (channel) {
+    channel.sendToQueue('problem_queue', Buffer.from(JSON.stringify(problem)), {
+      persistent: true
+    });
+    console.log('Problem submitted to problem_queue:', problem);
+  } else {
+    console.error('Channel is not available');
+  }
+};
 
 /*module.exports = {
   connectRabbitMQ,

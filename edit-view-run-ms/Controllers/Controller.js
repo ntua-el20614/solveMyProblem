@@ -1,5 +1,6 @@
 const Problem = require('../models/Problem');
 const { getLatestUsername } = require('../rabbitmq');
+const { submitProblemToQueue } = require('../rabbitmq');
 
 exports.test_endpoint = async (req, res) => {
   try {
@@ -21,11 +22,15 @@ exports.submitProblem = async (req, res, next) => {
     const latestUsername = getLatestUsername();
     const newProblem = new Problem({ title, description, createdBy: latestUsername });
     await newProblem.save();
+    submitProblemToQueue(newProblem);
+
     res.status(201).json({ message: 'Problem submitted successfully' });
   } catch (error) {
     console.error('Error submitting problem:', error);
     res.status(500).json({ message: 'Internal server error', error });
   }
+
+
 };
 /*
 module.exports = {
