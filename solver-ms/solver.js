@@ -45,6 +45,7 @@ async function connectRabbitMQ() {
             console.error(`stderr: ${stderr}`);
             return;
           }
+          // Anti console log na pienni sti vasi os result
           console.log(`stdout: ${stdout}`);
         });
 
