@@ -12,7 +12,7 @@ async function connectRabbitMQ() {
     const channel = await connection.createChannel();
     const queue = 'problem_queue';
 
-    await channel.assertQueue(queue, { durable: false });
+    await channel.assertQueue(queue, { durable: true });
     console.log(" [*] Waiting for messages. To exit press CTRL+C");
 
     channel.consume(queue, async (msg) => {

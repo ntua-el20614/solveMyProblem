@@ -1,11 +1,21 @@
+//parameters
+//json file
 const mongoose = require('mongoose');
 
 const problemSchema = new mongoose.Schema({
-  title: {
+  param1: {
     type: String,
     required: true
   },
-  description: {
+  param2: {
+    type: String,
+    required: true
+  },
+  param3: {
+    type: String,
+    required: true
+  },
+  input_file: {
     type: String,
     required: true
   },

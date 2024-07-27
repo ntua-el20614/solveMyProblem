@@ -1,6 +1,7 @@
 const Problem = require('../models/Problem');
 const { getLatestUsername } = require('../rabbitmq');
 const { submitProblemToQueue } = require('../rabbitmq');
+const fs = require('fs');
 
 exports.test_endpoint = async (req, res) => {
   try {
@@ -16,11 +17,25 @@ exports.test_endpoint = async (req, res) => {
 };
 
 exports.submitProblem = async (req, res, next) => {
-  const { title, description } = req.body;
+  //const { title, description } = req.body;
+
+  const { param1, param2, param3 } = req.body;
+  const inputFilePath = req.file.path;
+
+  
 
   try {
     const latestUsername = getLatestUsername();
-    const newProblem = new Problem({ title, description, createdBy: latestUsername });
+    const inputFileContent = fs.readFileSync(inputFilePath, 'utf8');
+
+    const newProblem = new Problem({
+      param1,
+      param2,
+      param3,
+      input_file: inputFileContent,
+      createdBy: latestUsername
+    });
+
     await newProblem.save();
     submitProblemToQueue(newProblem);
 
