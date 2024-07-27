@@ -46,7 +46,7 @@ app.post('/submit', upload.single('input_file'), (req, res) => {
         const queue = 'problem_queue';
         const msg = JSON.stringify(problemData);
 
-        channel.assertQueue(queue, { durable: false });
+        channel.assertQueue(queue, { durable: true });
         channel.sendToQueue(queue, Buffer.from(msg));
 
         console.log(" [x] Sent %s", msg);
