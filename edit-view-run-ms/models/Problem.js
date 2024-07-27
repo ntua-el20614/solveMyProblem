@@ -13,7 +13,8 @@ const problemSchema = new mongoose.Schema({
     type: String,
     enum: ['submitted', 'in-progress', 'solved'],
     default: 'submitted'
-  }
+  },
+  createdBy: { type: String, required: true }
 }, { collection: 'submitedProblem' });
 
 module.exports = mongoose.model('SubmitedProblems', problemSchema);
