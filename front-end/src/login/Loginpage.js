@@ -13,7 +13,7 @@ export default function LoginPage() {
     console.log('Logging in with', username);
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:7001/login', {
+      const response = await fetch('http://localhost:4001/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,6 +21,7 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password })
       });
       const data = await response.json();
+      console.log('Login response:', data);
       if (response.ok && data.message === "Authentication successful") {
         navigate('/homepage'); // Navigate to homepage on successful login
       } else {
