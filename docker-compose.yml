@@ -1,6 +1,26 @@
 version: '3.9'
 
 services:
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+    volumes:
+      - mongo-data:/data/db
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - app-network
   front-end:
     container_name: front-end-react
     restart: unless-stopped
@@ -33,6 +53,20 @@ services:
       - "4001:7001"
     env_file:
       - ./login-ms/.env
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  submition-test-ms:
+    container_name: submition-test-ms
+    build:
+      context: ./submition-test-ms
+      dockerfile: Dockerfile
+    ports:
+      - "4003:7003"
+    env_file:
+      - ./submition-test-ms/.env
     networks:
       - app-network
 
@@ -47,25 +81,16 @@ services:
       - ./view-results-ms/.env
     networks:
       - app-network
-
-  mongo:
-    image: mongo:4.4
-    container_name: mongo
+    
+  solver-ms:
+    container_name: solver-ms
+    build:
+      context: ./solver-ms
+      dockerfile: Dockerfile
     ports:
-      - "27017:27017"
-    networks:
-      - app-network
-    volumes:
-      - mongo-data:/data/db
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
+      - "4007:7007"
+    depends_on:
+      - rabbitmq
     networks:
       - app-network
       

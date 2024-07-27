@@ -24,4 +24,4 @@ COPY .env .env
 EXPOSE 7003
 
 # Start the application
-CMD ["node", "server.js"]
+CMD ["node", "app.js"]
