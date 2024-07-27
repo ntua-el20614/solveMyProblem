@@ -58,18 +58,6 @@ services:
     networks:
       - app-network
 
-  submition-test-ms:
-    container_name: submition-test-ms
-    build:
-      context: ./submition-test-ms
-      dockerfile: Dockerfile
-    ports:
-      - "4003:7003"
-    env_file:
-      - ./submition-test-ms/.env
-    networks:
-      - app-network
-
   view-results-ms:
     container_name: view-results-ms
     build:

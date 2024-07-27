@@ -1,4 +1,1 @@
-1 --> I oura na pienni me ti sira
-2 --> Na sasti to .env
-3 --> Na enothi  me to edit view run
-4 --> Anti na stelnete to json os miniman as to piannoume pou vasi
+1 --> Anti na stelnete to json os miniman as to piannoume pou vasi

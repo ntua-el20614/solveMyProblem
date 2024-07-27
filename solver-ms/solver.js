@@ -1,10 +1,11 @@
 const amqp = require('amqplib');
+require('dotenv').config();
 const { exec } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const rabbitmq = process.env.RABBITMQ_URL || "amqp://user:password@rabbitmq";
+const rabbitmq = process.env.RABBITMQ_URL;
 
 async function connectRabbitMQ() {
   try {
