@@ -26,14 +26,48 @@ exports.connectRabbitMQ = (retries = 5) => {
       const problemQueue = 'solvedProblems';
       channel.assertQueue(problemQueue, { durable: true });
 
+      const statusQueue = 'status_queue';
+      channel.assertQueue(statusQueue, { durable: true });
+
       channel.consume(problemQueue, (msg) => {
         if (msg !== null) {
           const messageContent = msg.content.toString();
           console.log('Received message:', messageContent);
-
+          exports.handleMessage(msg);
           channel.ack(msg);
         }
       });
     });
   });
+};
+
+exports.handleMessage = async (message) => {
+  try {
+    const messageContent = JSON.parse(message.content.toString());
+    const { output_file, createdBy, problemID } = messageContent;
+
+    // Create a new SolvedProblems object
+    const newResult = new SolvedProblems({
+      output_file,
+      createdBy,
+      status: 'solved' // Ensure the status is set to 'solved'
+    });
+
+    // Save the result to the database
+    await newResult.save();
+    console.log('Result saved to the database:', newResult);
+    // send the _id and status to update
+    publishToQueue("status_queue", { id: problemID, newStatus: "solved" });
+  } catch (error) {
+    console.error('Failed to handle message', error);
+  }
+};
+
+async function publishToQueue (queueName, message) {
+  if (!channel) {
+    console.error('Channel not set. Call connectRabbitMQ() first.');
+    return;
+  }
+  channel.assertQueue(queueName, { durable: true });
+  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
 };

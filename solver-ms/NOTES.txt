@@ -1,2 +1,0 @@
-1 --> Anti na stelnete to json os miniman as to piannoume pou vasi ----- Nomizo eginen
-2 --> Na allasi to status se IN-PROGRESS (evala comment) ---- Gia na doulepsi theli Problem ID giati nmz exi polla problems o idios user

@@ -18,7 +18,6 @@ exports.test_endpoint = async (req, res) => {
 
 exports.submitProblem = async (req, res, next) => {
   //const { title, description } = req.body;
-
   const { param1, param2, param3 } = req.body;
   const inputFilePath = req.file.path;
 
@@ -36,8 +35,8 @@ exports.submitProblem = async (req, res, next) => {
       createdBy: latestUsername
     });
 
-    await newProblem.save();
-    submitProblemToQueue(newProblem);
+    const savedProblem = await newProblem.save();
+    submitProblemToQueue(savedProblem);
 
     res.status(201).json({ message: 'Problem submitted successfully' });
   } catch (error) {

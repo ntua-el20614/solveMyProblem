@@ -26,6 +26,7 @@ async function processMessage(channel) {
 
     // Parse the JSON message
     const data = JSON.parse(content);
+    const problemID = data._id;
     const inputFileContent = data.input_file;
     const param1 = data.param1;
     const param2 = data.param2;
@@ -39,7 +40,8 @@ async function processMessage(channel) {
     // Construct the command
     const command = `python vrpSolver.py ${tempFilePath} ${param1} ${param2} ${param3}`;
 
-    // NA ILOPOIITHI
+    // Update the problem status
+    publishToQueue("status_queue", { id: problemID, newStatus: "in-progress" });
     console.log("Status updated to \"In-Progress\"");
 
     console.log("Executing command:", command);
@@ -52,10 +54,11 @@ async function processMessage(channel) {
         console.error(`stderr: ${stderr}`);
       } else {
           try {
-            publishToQueue("solvedProblems", { createdBy, stdout });
+            output_file = stdout;
+            publishToQueue("solvedProblems", { createdBy, output_file, problemID });
           } catch (error) {
               console.error('Error saving results:', error);
-          }
+          } 
           console.log(`Mr/Mrs ${createdBy} here are your results: ${stdout}`);
       }
 
@@ -77,9 +80,11 @@ async function connectRabbitMQ() {
       channel = await connection.createChannel();
       const queue = 'problem_queue';
       const queue1 = 'solvedProblems';
+      const queue2 = 'status_queue';
   
       await channel.assertQueue(queue, { durable: true });
       await channel.assertQueue(queue1, { durable: true });
+      await channel.assertQueue(queue2, { durable: true });
       console.log("Connected to RabbitMQ");
   
       channel.consume(queue, async (msg) => {
