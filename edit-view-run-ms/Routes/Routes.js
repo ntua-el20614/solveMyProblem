@@ -7,8 +7,14 @@ const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 
 router.get('/test', Controller.test_endpoint);
-// theli sasma gia input file
+
+
+
 router.post('/submit', upload.single('input_file'), Controller.submitProblem);
+router.post('/finalSubmition', Controller.finalSubmition);
+router.post('/edit', upload.single('input_file'), Controller.editProblem);
+
+router.get('/view', Controller.viewProblems);
 
 module.exports = router;
 

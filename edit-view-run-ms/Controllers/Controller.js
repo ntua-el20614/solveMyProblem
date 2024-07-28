@@ -17,7 +17,6 @@ exports.test_endpoint = async (req, res) => {
 };
 
 exports.submitProblem = async (req, res, next) => {
-  //const { title, description } = req.body;
   const { param1, param2, param3 } = req.body;
   const inputFilePath = req.file.path;
 
@@ -35,19 +34,82 @@ exports.submitProblem = async (req, res, next) => {
       createdBy: latestUsername
     });
 
-    const savedProblem = await newProblem.save();
-    submitProblemToQueue(savedProblem);
+    await newProblem.save();
+    //submitProblemToQueue(savedProblem);
 
-    res.status(201).json({ message: 'Problem submitted successfully' });
+    res.status(201).json({ message: 'Problem saved successfully' });
   } catch (error) {
-    console.error('Error submitting problem:', error);
+    console.error('Error saving problem:', error);
     res.status(500).json({ message: 'Internal server error', error });
   }
-
-
 };
-/*
-module.exports = {
-  test_endpoint,
-  submitProblem,
-};*/
+
+exports.finalSubmition = async (req, res, next) => {
+  const { problemId } = req.body;
+  try {
+    const problem = await Problem.findById(problemId);
+
+    if (!problem) {
+      return res.status(404).json({ message: 'Problem not found' });
+    }
+
+    submitProblemToQueue(problem);
+
+    res.status(200).json({ message: 'Problem submitted to queue successfully' });
+  } catch (error) {
+    console.error('Error submitting problem to queue:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+exports.viewProblems = async (req, res, next) => {
+  const { username } = req.body; // Destructure username from the request body
+  const createdBy = username;
+
+  try {
+    const problems = await Problem.find({ createdBy });
+    if (problems.length > 0) {
+      console.log('Problems found:', problems);
+      res.status(200).json(problems); // Send the problems as a JSON response
+    } else {
+      console.log('No problems found');
+      res.status(200).json([]); // Send an empty array if no problems found
+    }
+  } catch (error) {
+    console.error('Error finding problems:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+exports.editProblem = async (req, res, next) => {
+  const { id, param1, param2, param3 } = req.body;
+  const inputFile = req.file; // Assuming the file is uploaded with a field name 'file'
+
+  try {
+    // Prepare the update object
+    const update = {};
+    if (param1) update.param1 = param1;
+    if (param2) update.param2 = param2;
+    if (param3) update.param3 = param3;
+    if (inputFile) {
+      const inputFileContent = fs.readFileSync(inputFile.path, 'utf8');
+      update.input_file = inputFileContent;
+    }
+
+    // Find the problem by ID and update it
+    const updatedProblem = await Problem.findByIdAndUpdate(
+      id,
+      update,
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedProblem) {
+      return res.status(404).json({ message: 'Problem not found' });
+    }
+
+    res.status(200).json({ message: 'Problem updated successfully', updatedProblem });
+  } catch (error) {
+    console.error('Error updating problem:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
