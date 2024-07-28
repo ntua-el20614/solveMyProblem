@@ -56,11 +56,11 @@ exports.connectRabbitMQ = (retries = 5) => {
       const problemQueue = 'solvedProblems';
       channel.assertQueue(problemQueue, { durable: true });
 
-      channel.consume(queueName, (msg) => {
+      channel.consume(problemQueue, (msg) => {
         if (msg !== null) {
           const messageContent = msg.content.toString();
           console.log('Received message:', messageContent);
-          
+
           channel.ack(msg);
         }
       });
