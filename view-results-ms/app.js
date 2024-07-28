@@ -12,13 +12,11 @@ app.use(express.urlencoded({ extended: true }));
 // Connect to MongoDB using the URI from the .env file
 const mongoUri = process.env.MONGO_URI;
 
-const SubProbConnection = mongoose.createConnection(mongoUri);
-
-SubProbConnection.on('connected', () => {
+mongoose.connect(mongoUri)
+  .then(() => {
     console.log('Connected to Database');
-  });
-  
-  SubProbConnection.on('error', (err) => {
+  })
+  .catch(err => {
     console.error('Failed to connect to Database', err);
   });
 
