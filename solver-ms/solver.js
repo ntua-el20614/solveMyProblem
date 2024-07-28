@@ -11,16 +11,11 @@ let channel = null;
 let processing = false;
 const messageQueue = [];
 
-<<<<<<< HEAD
 async function processMessage(channel) {
   if (messageQueue.length === 0) {
     processing = false;
     return;
   }
-=======
-    await channel.assertQueue(queue, { durable: true });
-    console.log(" [*] Waiting for messages. To exit press CTRL+C");
->>>>>>> main
 
   processing = true;
   const msg = messageQueue.shift();
