@@ -1,3 +1,5 @@
+const SolvedProblems = require('../Models/Results'); 
+
 exports.test_endpoint = async (req, res) => {
   try {
     res.status(200).json({ message: 'Test endpoint' });
@@ -6,22 +8,21 @@ exports.test_endpoint = async (req, res) => {
   }
 };
 
-exports.submitProblem = async (req, res, next) => {
-  const { title, description } = req.body;
+exports.viewResults = async (req, res, next) => {
+  const { username } = req.body;
 
   try {
-    const latestUsername = getLatestUsername();
-    const newProblem = new Problem({ title, description, createdBy: latestUsername });
-    await newProblem.save();
-    submitProblemToQueue(newProblem);
+    const results = await SolvedProblems.find({ createdBy: username });
 
-    res.status(201).json({ message: 'Problem submitted successfully' });
+    if (results.length > 0) {
+      console.log('Results found:', results);
+      res.status(200).json(results);
+    } else {
+      console.log('No results found');
+      res.status(404).json({ message: 'No results found' });
+    }
   } catch (error) {
-    console.error('Error submitting problem:', error);
+    console.error('Error finding results:', error);
     res.status(500).json({ message: 'Internal server error', error });
   }
-
-
 };
-
-//module.exports = { test_endpoint };
