@@ -1,26 +1,12 @@
 const amqp = require('amqplib');
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
 require('dotenv').config();
 const { exec } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const solvedProblem = require('./Models/Results');
-const SubmitedProblems = require('./Models/Problem');
 
 const rabbitmq = process.env.RABBITMQ_URL;
-const mongoUri = process.env.MONGO_URI;
-
-// Connect to Database
-mongoose.connect(mongoUri)
-  .then(() => {
-    console.log('Connected to Database');
-  })
-  .catch(err => {
-    console.error('Failed to connect to Database', err);
-  });
+let channel = null;
 
 let processing = false;
 const messageQueue = [];
@@ -52,16 +38,10 @@ async function processMessage(channel) {
 
     // Construct the command
     const command = `python vrpSolver.py ${tempFilePath} ${param1} ${param2} ${param3}`;
-    
-    // EDO ANTI NA TIPONI NA ALLASI TO STATUS
 
-    // Find the problem by User and update the status
-      await SubmitedProblems.findByIdAndUpdate(
-        createdBy,
-        { status: "in-progress" }
-      );
-
+    // NA ILOPOIITHI
     console.log("Status updated to \"In-Progress\"");
+
     console.log("Executing command:", command);
 
     // Execute the command
@@ -71,18 +51,12 @@ async function processMessage(channel) {
       } else if (stderr) {
         console.error(`stderr: ${stderr}`);
       } else {
-        // Log the result or store it in a database as needed
-        const results = new solvedProblem({
-          output_file: stdout,
-          createdBy
-        });
-
-        try {
-          results.save();
-        } catch (error) {
-            console.error('Error saving results:', error);
-        }
-        console.log(`Mr/Mrs ${createdBy} here are your results: ${stdout}`);
+          try {
+            publishToQueue("solvedProblems", { createdBy, stdout });
+          } catch (error) {
+              console.error('Error saving results:', error);
+          }
+          console.log(`Mr/Mrs ${createdBy} here are your results: ${stdout}`);
       }
 
       // Acknowledge the message
@@ -100,10 +74,12 @@ async function connectRabbitMQ() {
   for (let attempts = 1; attempts <= 5; attempts++) {
     try {
       const connection = await amqp.connect(rabbitmq);
-      const channel = await connection.createChannel();
+      channel = await connection.createChannel();
       const queue = 'problem_queue';
+      const queue1 = 'solvedProblems';
   
       await channel.assertQueue(queue, { durable: true });
+      await channel.assertQueue(queue1, { durable: true });
       console.log("Connected to RabbitMQ");
   
       channel.consume(queue, async (msg) => {
@@ -127,5 +103,14 @@ async function connectRabbitMQ() {
   }
   }
 }
+
+async function publishToQueue (queueName, message) {
+  if (!channel) {
+    console.error('Channel not set. Call connectRabbitMQ() first.');
+    return;
+  }
+  channel.assertQueue(queueName, { durable: true });
+  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
+};
 
 connectRabbitMQ();
