@@ -1,6 +1,8 @@
 // rabbitmq.js
 
 const amqp = require('amqplib/callback_api');
+const mongoose = require('mongoose');
+const SubmitedProblems = require('./models/Problem');
 
 
 let channel = null;
@@ -26,8 +28,13 @@ exports.connectRabbitMQ = (retries = 5) => {
       console.log('Connected to RabbitMQ');
 
       const queueName = 'user_actions';
+      const statusQueue = 'status_queue';
+      
       channel.assertQueue(queueName, { durable: true });
       console.log('Waiting for messages in %s', queueName);
+
+      channel.assertQueue(statusQueue, { durable: true });
+      console.log('Waiting for messages in %s', statusQueue);
 
       const problemQueue = 'problem_queue';
       channel.assertQueue(problemQueue, { durable: true });
@@ -40,6 +47,17 @@ exports.connectRabbitMQ = (retries = 5) => {
           channel.ack(msg);
         }
       });
+
+      channel.consume(statusQueue, (msg) => {
+        if (msg !== null) {
+          const messageContent = msg.content.toString();
+          console.log('Received status update message:', messageContent);
+          const { id, newStatus } = JSON.parse(messageContent);
+          updateProblemStatus(id, newStatus);
+          channel.ack(msg);
+        }
+      });
+
     });
   });
 };
@@ -67,6 +85,15 @@ exports.submitProblemToQueue = (problem) => {
   }
 };
 
-/*module.exports = {
-  connectRabbitMQ,
-};*/
+const updateProblemStatus = async (problemId, newStatus) => {
+  try {
+    const updatedProblem = await SubmitedProblems.findByIdAndUpdate(problemId, { status: newStatus }, { new: true });
+    if (updatedProblem) {
+      console.log(`Problem ${problemId} status updated to ${newStatus}`);
+    } else {
+      console.error(`Problem ${problemId} not found`);
+    }
+  } catch (error) {
+    console.error('Failed to update problem status', error);
+  }
+};

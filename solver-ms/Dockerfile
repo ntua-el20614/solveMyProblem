@@ -29,8 +29,5 @@ COPY .env .env
 # Ensure the virtual environment's Python is used
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Expose the port on which the application will run
-EXPOSE 7007
-
 # Set the command to run the Node.js script
 CMD ["node", "solver.js"]
