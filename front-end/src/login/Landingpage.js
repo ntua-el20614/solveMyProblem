@@ -7,6 +7,8 @@ function LandingPage() {
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
             <p>Welcome to our application! Click the button below to log in.</p>
             <StyledButton to="/login">Take me to login page</StyledButton>
+            <StyledButton to="/register">Lets create an account</StyledButton>
+            
         </div>
     );
 }
