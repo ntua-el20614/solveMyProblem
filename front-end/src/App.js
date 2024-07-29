@@ -5,6 +5,7 @@ import './App.css';
 
 import LandingPage from './login/Landingpage'; // Corrected component name based on your file
 import LoginPage from './login/Loginpage';
+import RegisterPage from './login/Registerpage';
 import Homepage from './homepage/Homepage';
 import NewSubmission from './submissions/Newsubmission';
 import EditSubmission from './submissions/Editsubmission';
@@ -34,6 +35,7 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage setUsername={setUsername} />} />
+            <Route path="/register" element={<RegisterPage setUsername={setUsername}/>} />
             <Route path="/homepage" element={<Homepage />} />
             <Route path="/new_submission" element={<NewSubmission />} />
             <Route path="/edit_submission" element={<EditSubmission />} />
