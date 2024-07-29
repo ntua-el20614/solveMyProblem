@@ -1,13 +1,18 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import logo from '../logo_.jpg'; // Adjust the path based on your project structure
 
 const colors = {
-    primary: '#4a90e2', // a more muted blue
-    secondary: '#d3d3d3', // light gray for secondary text
-    letters: '#ffffff', // white text
-    shadow: 'rgba(0, 0, 0, 0.1)' // subtle shadow
+    primary: '#4a90e2',
+    secondary: '#d3d3d3',
+    letters: '#ffffff',
+    shadow: 'rgba(0, 0, 0, 0.4)'
 };
 
 function Header({ username = '' }) {
+    const isLoggedIn = !!Cookies.get('user');
+
     return (
         <header style={{ 
             backgroundColor: colors.primary, 
@@ -18,11 +23,13 @@ function Header({ username = '' }) {
             position: 'fixed', 
             top: '0', 
             width: '100%',
-            zIndex: '1000', // Ensures the header stays on top of other elements
+            zIndex: '1000',
             boxShadow: `0 4px 8px ${colors.shadow}`
         }}>
             <div style={{ flex: '1', display: 'flex', justifyContent: 'flex-start' }}>
-                <img src="path_to_logo_here" alt="" style={{ height: '60px' }} />
+                <Link to={isLoggedIn ? "/homepage" : "/"}>
+                    <img src={logo} alt="Logo" style={{ height: '60px', maxWidth: '200px', objectFit: 'contain' }} />
+                </Link>
             </div>
             <div style={{ 
                 position: 'absolute', 
@@ -49,12 +56,12 @@ function Header({ username = '' }) {
             </div>
             <div style={{ flex: '1', display: 'flex', justifyContent: 'flex-end' }}>
                 <p style={{ 
-                    margin: '0', 
+                    margin: '0 50px', 
                     color: colors.letters, 
                     fontSize: '1.2rem', 
                     fontFamily: '"Roboto", sans-serif' 
                 }}>
-                    {username ? `Hello, ${username}` : ''}
+                    {username ? `Hello ${username}!` : ''}
                 </p>
             </div>
         </header>
