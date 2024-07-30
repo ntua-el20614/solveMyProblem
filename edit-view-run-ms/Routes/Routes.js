@@ -6,7 +6,7 @@ const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
 
-router.get('/test', Controller.test_endpoint);
+router.post('/test', Controller.test_endpoint);
 
 
 

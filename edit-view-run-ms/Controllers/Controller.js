@@ -1,20 +1,15 @@
 const Problem = require('../models/Problem');
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 const { getLatestUsername } = require('../rabbitmq');
 const { submitProblemToQueue } = require('../rabbitmq');
 const fs = require('fs');
 
 exports.test_endpoint = async (req, res) => {
-  try {
-    const latestUsername = getLatestUsername();
-    if (latestUsername) {
-      res.status(200).json({ message: 'Test endpoint', username: latestUsername });
-    } else {
-      res.status(200).json({ message: 'Test endpoint', info: 'No username available.' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
+    console.log('Request body:', req.body);
+    res.status(200).json(req.body);
+  };
+  
 
 exports.submitProblem = async (req, res, next) => {
   const { param1, param2, param3, username } = req.body;
@@ -37,6 +32,7 @@ exports.submitProblem = async (req, res, next) => {
     });
 
     await newProblem.save();
+    console.log(newProblem);
     //submitProblemToQueue(savedProblem);
 
     res.status(201).json({ message: 'Problem saved successfully' });
@@ -47,9 +43,19 @@ exports.submitProblem = async (req, res, next) => {
 };
 
 exports.finalSubmition = async (req, res, next) => {
-  const { problemId } = req.body;
+  const { id } = req.body;
+  
+  console.log('Request body:', req.body);
+  console.log('Received problemId:', id);
+
   try {
-    const problem = await Problem.findById(problemId);
+    // Ensure problemId is an ObjectId
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid problem ID format' });
+    }
+
+    const problem = await Problem.findById(id);
+    console.log('Found problem:', problem);
 
     if (!problem) {
       return res.status(404).json({ message: 'Problem not found' });
@@ -63,6 +69,8 @@ exports.finalSubmition = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error', error });
   }
 };
+
+
 
 exports.viewProblems = async (req, res, next) => {
   const { username } = req.body; // Destructure username from the request body
