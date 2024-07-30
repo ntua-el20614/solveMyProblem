@@ -69,7 +69,7 @@ exports.authenticateUser = async (req, res, next) => {
 
     // If the password is correct, generate a JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, username: user.username, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1h' } // Token expires in 1 hour
     );

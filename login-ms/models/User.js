@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
   using_tokens: {
     type: Number,
     default: 50
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 }, { collection: 'user' });
 
