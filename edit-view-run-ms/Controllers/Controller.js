@@ -17,13 +17,15 @@ exports.test_endpoint = async (req, res) => {
 };
 
 exports.submitProblem = async (req, res, next) => {
-  const { param1, param2, param3 } = req.body;
-  const inputFilePath = req.file.path;
+  const { param1, param2, param3, username } = req.body;
+  const inputFilePath = req.file ? req.file.path : null;
 
-  
+  if (!inputFilePath) {
+    return res.status(400).json({ message: 'Input file is required' });
+  }
 
   try {
-    const latestUsername = getLatestUsername();
+    const latestUsername = username;
     const inputFileContent = fs.readFileSync(inputFilePath, 'utf8');
 
     const newProblem = new Problem({
@@ -82,10 +84,21 @@ exports.viewProblems = async (req, res, next) => {
 };
 
 exports.editProblem = async (req, res, next) => {
-  const { id, param1, param2, param3 } = req.body;
+  const { id, param1, param2, param3, deleteProblem } = req.body;
   const inputFile = req.file; // Assuming the file is uploaded with a field name 'file'
 
   try {
+    if (deleteProblem) {
+      // Delete the problem
+      const deletedProblem = await Problem.findByIdAndDelete(id);
+
+      if (!deletedProblem) {
+        return res.status(404).json({ message: 'Problem not found' });
+      }
+
+      return res.status(200).json({ message: 'Problem deleted successfully' });
+    }
+
     // Prepare the update object
     const update = {};
     if (param1) update.param1 = param1;
@@ -113,3 +126,4 @@ exports.editProblem = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error', error });
   }
 };
+
