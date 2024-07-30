@@ -1,15 +1,9 @@
 const Problem = require('../models/Problem');
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
-const { getLatestUsername } = require('../rabbitmq');
 const { submitProblemToQueue } = require('../rabbitmq');
 const fs = require('fs');
-
-exports.test_endpoint = async (req, res) => {
-    console.log('Request body:', req.body);
-    res.status(200).json(req.body);
-  };
-  
+ 
 
 exports.submitProblem = async (req, res, next) => {
   const { param1, param2, param3, username } = req.body;
@@ -45,8 +39,8 @@ exports.submitProblem = async (req, res, next) => {
 exports.finalSubmition = async (req, res, next) => {
   const { id } = req.body;
   
-  console.log('Request body:', req.body);
-  console.log('Received problemId:', id);
+  // console.log('Request body:', req.body);
+  // console.log('Received problemId:', id);
 
   try {
     // Ensure problemId is an ObjectId
