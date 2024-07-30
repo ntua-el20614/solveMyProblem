@@ -1,4 +1,4 @@
-const amqp = require('amqplib/callback_api');
+/*const amqp = require('amqplib/callback_api');
 
 let channel = null;
 const rabbitURI = process.env.RABBITMQ_URL;
@@ -46,3 +46,4 @@ exports.consumeFromQueue = (queueName, callback) => {
     }
   });
 };
+*/

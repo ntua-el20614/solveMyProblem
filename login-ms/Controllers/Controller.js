@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { publishToQueue } = require('../rabbitmq');
+//const { publishToQueue } = require('../rabbitmq');
 const { consumeFromQueue } = require('../rabbitmq');
 
 exports.test_endpoint = async (req, res) => {
@@ -28,6 +28,16 @@ exports.registerUser = async (req, res, next) => {
     });
 
     await newUser.save();
+    const currentUser = await User.find( { username } );
+
+
+    const token = jwt.sign(
+      { userId: currentUser._id, username: currentUser.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+    console.log('Generated token:', token);
+
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error('Error registering user:', error);
@@ -66,9 +76,9 @@ exports.authenticateUser = async (req, res, next) => {
     console.log('Generated token:', token);
 
     // Publish the token to the RabbitMQ queue
-    const message = JSON.stringify({ username: user.username});
-    publishToQueue('user_actions', message);
-    console.log('Published message to queue:', message);
+    //const message = JSON.stringify({ username: user.username});
+    //publishToQueue('user_actions', message);
+    //console.log('Published message to queue:', message);
     // Respond with a 200 status and include the token
     res.status(200).json({ message: 'Authentication successful', token });
   } catch (error) {
@@ -78,3 +88,6 @@ exports.authenticateUser = async (req, res, next) => {
   }
 };
 
+exports.logout = async (req, res, next) => {
+  res.status(200).json({ message: 'Logout Successfull'});
+};
