@@ -15,6 +15,6 @@ router.post('/finalSubmition', Controller.finalSubmition);
 router.post('/edit', upload.single('input_file'), Controller.editProblem);
 
 router.get('/view', Controller.viewProblems);
+router.get('/viewAll', Controller.viewAllProblems);
 
 module.exports = router;
-
