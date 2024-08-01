@@ -6,9 +6,6 @@ const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
 
-router.post('/test', Controller.test_endpoint);
-
-
 
 router.post('/submit', upload.single('input_file'), Controller.submitProblem);
 router.post('/finalSubmition', Controller.finalSubmition);
