@@ -85,6 +85,30 @@ exports.viewProblems = async (req, res, next) => {
   }
 };
 
+exports.viewAllProblems = async (req, res, next) => {
+  const { username } = req.body;
+
+  try {
+    let query = {};
+
+    if (username) {
+      query.createdBy = { $regex: username, $options: 'i' }; // Case-insensitive search
+    }
+
+    const problems = await Problem.find(query);
+    if (problems.length > 0) {
+      console.log('Problems found:', problems);
+      res.status(200).json(problems); // Send the problems as a JSON response
+    } else {
+      console.log('No problems found');
+      res.status(200).json([]); // Send an empty array if no problems found
+    }
+  } catch (error) {
+    console.error('Error finding problems:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
 exports.editProblem = async (req, res, next) => {
   const { id, param1, param2, param3, deleteProblem } = req.body;
   const inputFile = req.file; // Assuming the file is uploaded with a field name 'file'

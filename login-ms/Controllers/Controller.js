@@ -91,3 +91,19 @@ exports.authenticateUser = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   res.status(200).json({ message: 'Logout Successfull'});
 };
+
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    if (users.length > 0) {
+      console.log('Users found:', users);
+      res.status(200).json(users);
+    } else {
+      console.log('No users found');
+      res.status(404).json({ message: 'No users found' });
+    }
+  } catch (error) {
+    console.error('Error finding users:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
