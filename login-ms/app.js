@@ -20,16 +20,6 @@ mongoose.connect(mongoUri)
     console.error('Failed to connect to Database', err);
   });
 
-/*const SubProbConnection = mongoose.createConnection(mongoUri);
-
-SubProbConnection.on('connected', () => {
-    console.log('Connected to Database');
-  });
-  
-  SubProbConnection.on('error', (err) => {
-    console.error('Failed to connect to Database', err);
-  });*/
-
 // Routes
 app.use('/', routes);
 
