@@ -19,8 +19,12 @@ export default function LoginPage({ setUsername }) {
   }, []);
 
   const handleLogin = async (event) => {
-    console.log('Logging in with', usernameInput);
     event.preventDefault();
+    if(!usernameInput || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    console.log('Logging in with', usernameInput);
     try {
       const response = await fetch('http://localhost:4001/login', {
         method: 'POST',
