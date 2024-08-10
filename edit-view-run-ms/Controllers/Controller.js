@@ -26,8 +26,6 @@ exports.submitProblem = async (req, res, next) => {
     });
 
     await newProblem.save();
-    console.log(newProblem);
-    //submitProblemToQueue(savedProblem);
 
     res.status(201).json({ message: 'Problem saved successfully' });
   } catch (error) {
@@ -39,11 +37,7 @@ exports.submitProblem = async (req, res, next) => {
 exports.finalSubmition = async (req, res, next) => {
   const { id } = req.body;
   
-  // console.log('Request body:', req.body);
-  // console.log('Received problemId:', id);
-
   try {
-    // Ensure problemId is an ObjectId
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid problem ID format' });
     }
@@ -71,9 +65,8 @@ exports.viewProblems = async (req, res, next) => {
   const createdBy = username;
 
   try {
-    const problems = await Problem.find({ createdBy });
+    const problems = await Problem.find({ createdBy/*: username*/ });
     if (problems.length > 0) {
-      console.log('Problems found:', problems);
       res.status(200).json(problems); // Send the problems as a JSON response
     } else {
       console.log('No problems found');
@@ -97,7 +90,6 @@ exports.viewAllProblems = async (req, res, next) => {
 
     const problems = await Problem.find(query);
     if (problems.length > 0) {
-      console.log('Problems found:', problems);
       res.status(200).json(problems); // Send the problems as a JSON response
     } else {
       console.log('No problems found');
