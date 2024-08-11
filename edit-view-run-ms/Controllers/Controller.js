@@ -61,7 +61,26 @@ exports.finalSubmition = async (req, res, next) => {
   }
 };
 
+exports.deleteProblem = async (req, res, next) => {
+  const { id } = req.query;
+  try{
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid problem ID format' });
+    }
 
+    const deletedProblem = await Problem.findByIdAndDelete(id);
+
+    if (!deletedProblem) {
+      return res.status(404).json({ message: 'Problem not found' });
+    }
+
+    res.status(200).json({ message: 'Problem deleted successfully' });
+  }
+  catch (error) {
+    console.error('Error deleting problem:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
 
 exports.viewProblems = async (req, res, next) => {
   const { username } = req.query;  // Accessing username from query parameters correctly

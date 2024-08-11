@@ -5,6 +5,14 @@ import { StyledButton } from '../components/Button';
 function Homepage() {
     const [submissions, setSubmissions] = useState([]);
 
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        //const formattedTime = date.toLocaleTimeString('en-US', { timeStyle: 'short' }); // Gets time in HH:MM AM/PM format
+        const formattedDate = date.toLocaleDateString('en-US'); // Gets date in MM/DD/YYYY format
+        return `${formattedDate}`;//${formattedTime} 
+    };
+
     const buttonStyle = {
         backgroundColor: '#E0E0E0',
         border: 'none',
@@ -87,6 +95,19 @@ function Homepage() {
         }
     };
 
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:4000/delete?id=${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                console.log('Submission deleted successfully');
+            } else {
+                console.error('Failed to delete submission', await response.text());
+            }
+        } catch (error) {
+            console.error('Error deleting submission:', error);
+        }
+    }
+
     return (
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
             <PageName name="Home Page" />
@@ -95,20 +116,24 @@ function Homepage() {
                     <div key={submission._id} style={{ margin: '10px', padding: '10px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '10px' }}>
                         <div style={{ flexGrow: 1, display: 'flex', gap: '10px' }}>
                             <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '40%' }}>{submission.name || "No Name Given"}</span>
-                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '20%' }}>{submission.created_on || "No Date"}</span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '20%' }}>
+                                {submission.createdOn ? formatDate(submission.createdOn) : "No Date"}
+                            </span>                            
                             <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '15%' }}>{submission.status}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button style={buttonStyle} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => console.log('View/Edit pressed', submission._id)}>View/Edit</button>
                             <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => handleRun(submission._id)} disabled={submission.status !== 'Ready'}>Run</button>
                             <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => console.log("view results")} disabled={submission.status !== 'Executed'}>View Results</button>
-                            <button style={buttonStyle} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => console.log('Delete')}>Delete</button>
+                            <button style={buttonStyle} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => handleDelete(submission._id)}>Delete</button>
                         </div>
                     </div>
                 )) : (
                     <div style={{
+                        borderRadius: "20px",
+                        padding: "10px",
                         backgroundColor: "#f9f9f9",
-                        height: "450px",
+                        height: "430px",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center"  // This will center the text vertically

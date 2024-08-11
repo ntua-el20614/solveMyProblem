@@ -11,6 +11,7 @@ router.post('/submit', upload.single('input_file'), Controller.submitProblem);
 router.post('/finalSubmition', Controller.finalSubmition);
 router.post('/edit', upload.single('input_file'), Controller.editProblem);
 
+router.delete('/delete', Controller.deleteProblem);
 router.get('/view', Controller.viewProblems);
 router.get('/viewAll', Controller.viewAllProblems);
 
