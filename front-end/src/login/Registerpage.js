@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import StyledButton from '../components/Button';
+import { StyledButton } from '../components/Button';
 import '../App.css';
 import './styles/form.css';
 

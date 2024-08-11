@@ -93,3 +93,7 @@ exports.getUsers = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error', error });
   }
 };
+
+exports.getHealth = async (req, res, next) => {
+  res.status(200).json({ message: 'Login microservice is healthy' });
+};

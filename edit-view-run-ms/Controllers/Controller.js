@@ -43,8 +43,8 @@ exports.finalSubmition = async (req, res, next) => {
     }
 
     const problem = await Problem.findById(id);
-    console.log('Found problem:', problem);
 
+    
     if (!problem) {
       return res.status(404).json({ message: 'Problem not found' });
     }
@@ -61,15 +61,16 @@ exports.finalSubmition = async (req, res, next) => {
 
 
 exports.viewProblems = async (req, res, next) => {
-  const { username } = req.body; // Destructure username from the request body
-  const createdBy = username;
-
+  const { username } = req.query;  // Accessing username from query parameters correctly
+  // Correctly construct a query object that uses a regex for case-insensitive matching
+  const query = username ? { createdBy: { $regex: new RegExp(username, 'i') } } : {};
+  
   try {
-    const problems = await Problem.find({ createdBy/*: username*/ });
+    const problems = await Problem.find(query);
     if (problems.length > 0) {
       res.status(200).json(problems); // Send the problems as a JSON response
     } else {
-      console.log('No problems found');
+
       res.status(200).json([]); // Send an empty array if no problems found
     }
   } catch (error) {
@@ -77,6 +78,9 @@ exports.viewProblems = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error', error });
   }
 };
+
+
+
 
 exports.viewAllProblems = async (req, res, next) => {
   const { username } = req.body;
@@ -92,7 +96,7 @@ exports.viewAllProblems = async (req, res, next) => {
     if (problems.length > 0) {
       res.status(200).json(problems); // Send the problems as a JSON response
     } else {
-      console.log('No problems found');
+
       res.status(200).json([]); // Send an empty array if no problems found
     }
   } catch (error) {
