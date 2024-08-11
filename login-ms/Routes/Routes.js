@@ -7,5 +7,6 @@ router.get('/test', Controller.test_endpoint);
 router.post('/login', Controller.authenticateUser);
 router.post('/logout', Controller.logout);
 router.get('/users', Controller.getUsers);
+router.get('/health', Controller.getHealth);
 
 module.exports = router;
