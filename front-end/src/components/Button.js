@@ -6,7 +6,7 @@ const colors = {
     background: '#E0E0E0'
 };
 
-const StyledButton = ({ to, children, onClick, type = 'button' }) => {
+export const StyledButton = ({ to, children, onClick, type = 'button' }) => {
     const outerBoxStyle = {
         display: 'inline-block',
         padding: '2px 2px',
@@ -59,5 +59,3 @@ const StyledButton = ({ to, children, onClick, type = 'button' }) => {
 
     return to ? renderButton(Link, { to }) : renderButton('button', { onClick, type });
 };
-
-export default StyledButton;

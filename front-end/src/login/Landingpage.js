@@ -1,5 +1,5 @@
 import React from 'react';
-import StyledButton from '../components/Button'; // Adjust the path based on your project structure
+import { StyledButton } from '../components/Button';
 import '../App.css';
 
 function LandingPage() {
