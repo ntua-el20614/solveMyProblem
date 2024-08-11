@@ -24,6 +24,14 @@ const problemSchema = new mongoose.Schema({
     enum: ['submitted', 'in-progress', 'solved'],
     default: 'submitted'
   },
+  createdOn: {
+    type: Date,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
   createdBy: { type: String, required: true }
 }, { collection: 'submitedProblem' });
 
