@@ -6,7 +6,7 @@ const fs = require('fs');
  
 
 exports.submitProblem = async (req, res, next) => {
-  const { param1, param2, param3, username } = req.body;
+  const { param1, param2, param3, username, name } = req.body;
   const inputFilePath = req.file ? req.file.path : null;
 
   if (!inputFilePath) {
@@ -16,11 +16,14 @@ exports.submitProblem = async (req, res, next) => {
   try {
     const latestUsername = username;
     const inputFileContent = fs.readFileSync(inputFilePath, 'utf8');
+    const createdOn = new Date();
 
     const newProblem = new Problem({
       param1,
       param2,
       param3,
+      name,
+      createdOn,
       input_file: inputFileContent,
       createdBy: latestUsername
     });
@@ -106,7 +109,7 @@ exports.viewAllProblems = async (req, res, next) => {
 };
 
 exports.editProblem = async (req, res, next) => {
-  const { id, param1, param2, param3, deleteProblem } = req.body;
+  const { id, param1, param2, param3, name, deleteProblem } = req.body;
   const inputFile = req.file; // Assuming the file is uploaded with a field name 'file'
 
   try {
@@ -126,6 +129,7 @@ exports.editProblem = async (req, res, next) => {
     if (param1) update.param1 = param1;
     if (param2) update.param2 = param2;
     if (param3) update.param3 = param3;
+    if (name) update.name = name;
     if (inputFile) {
       const inputFileContent = fs.readFileSync(inputFile.path, 'utf8');
       update.input_file = inputFileContent;
