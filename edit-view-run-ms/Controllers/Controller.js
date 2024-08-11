@@ -43,8 +43,8 @@ exports.finalSubmition = async (req, res, next) => {
     }
 
     const problem = await Problem.findById(id);
-    console.log('Found problem:', problem);
 
+    
     if (!problem) {
       return res.status(404).json({ message: 'Problem not found' });
     }
@@ -70,7 +70,7 @@ exports.viewProblems = async (req, res, next) => {
     if (problems.length > 0) {
       res.status(200).json(problems); // Send the problems as a JSON response
     } else {
-      console.log('No problems found');
+
       res.status(200).json([]); // Send an empty array if no problems found
     }
   } catch (error) {
@@ -96,7 +96,7 @@ exports.viewAllProblems = async (req, res, next) => {
     if (problems.length > 0) {
       res.status(200).json(problems); // Send the problems as a JSON response
     } else {
-      console.log('No problems found');
+
       res.status(200).json([]); // Send an empty array if no problems found
     }
   } catch (error) {
