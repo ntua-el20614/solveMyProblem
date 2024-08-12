@@ -2,7 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { PageName } from '../components/SecondaryHeader';
 import { StyledButton } from '../components/Button';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+
+
 function Homepage() {
+    const navigate = useNavigate();
     const [submissions, setSubmissions] = useState([]);
 
 
@@ -131,13 +135,26 @@ function Homepage() {
                                 onMouseDown={handleMouseDown}
                                 onMouseUp={handleMouseUp}
                                 onMouseLeave={handleMouseUp}
-                                onClick={() => console.log('View/Edit pressed', submission._id)}
+                                onClick={() => {
+                                    console.log("view/edit", submission._id); navigate(`/edit_submission/${submission._id}`)
+                                }}
                                 disabled={submission.status !== 'Ready'}
                             >
                                 View/Edit
                             </button>
-                            <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => handleRun(submission._id)} disabled={submission.status !== 'Ready'}>Run</button>
-                            <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => console.log("view results")} disabled={submission.status !== 'Executed'}>View Results</button>
+
+                            <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Ready')
+                                    handleRun(submission._id)
+                                else
+                                    console.log("Submission is not ready to run")
+
+                            }} disabled={submission.status !== 'Ready'}>Run</button>
+                            <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Executed') {
+                                    navigate(`/view_results/${submission._id}`);
+                                }
+                            }} disabled={submission.status !== 'Executed'}>View Results</button>
                             <button
                                 style={{
                                     ...buttonStyle,

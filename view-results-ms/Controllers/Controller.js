@@ -9,7 +9,7 @@ exports.test_endpoint = async (req, res) => {
 };
 
 exports.viewResults = async (req, res, next) => {
-  const { username } = req.body;
+  const { username } = req.params;
 
   try {
     const results = await SolvedProblems.find({ createdBy: username });
