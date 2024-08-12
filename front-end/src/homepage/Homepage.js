@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { PageName } from '../components/SecondaryHeader';
 import { StyledButton } from '../components/Button';
-
+import Cookies from 'js-cookie';
 function Homepage() {
     const [submissions, setSubmissions] = useState([]);
 
@@ -55,7 +55,7 @@ function Homepage() {
     };
 
     const fetchSubmissions = useCallback(async () => {
-        const username = document.cookie.split('; ').find(row => row.startsWith('user=')).split('=')[1];
+        const username = Cookies.get('user_SMP');
         try {
             const response = await fetch(`http://localhost:4000/view?username=${username}`);
             const data = await response.json();

@@ -15,7 +15,7 @@ export default function LoginPage({ setUsername }) {
     // Clear cookies on component mount if needed
     Cookies.remove('token');
     setUsername('');  
-    Cookies.remove('user');
+    Cookies.remove('user_SMP');
   }, []);
 
   const handleLogin = async (event) => {
@@ -38,7 +38,7 @@ export default function LoginPage({ setUsername }) {
       if (response.ok && data.message === "Authentication successful") {
         // Save token and username to cookies
         Cookies.set('token', data.token);
-        Cookies.set('user', usernameInput);
+        Cookies.set('user_SMP', usernameInput);
         setUsername(usernameInput); // Update the username state in App component
         navigate('/homepage');
       } else {

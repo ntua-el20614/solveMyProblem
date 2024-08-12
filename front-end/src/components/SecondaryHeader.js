@@ -31,7 +31,7 @@ export const PageName = ({ name }) => {
 
     const handleLogout = () => {
         Cookies.remove('token');
-        Cookies.remove('user');
+        Cookies.remove('user_SMP');
         window.location.href = '/';
     };
 
