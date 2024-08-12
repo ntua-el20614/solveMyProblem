@@ -78,7 +78,7 @@ function Homepage() {
             id: id
         };
         try {
-            const response = await fetch('http://localhost:4000/finalSubmition', { 
+            const response = await fetch('http://localhost:4000/finalSubmition', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -118,14 +118,41 @@ function Homepage() {
                             <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '40%' }}>{submission.name || "No Name Given"}</span>
                             <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '20%' }}>
                                 {submission.createdOn ? formatDate(submission.createdOn) : "No Date"}
-                            </span>                            
+                            </span>
                             <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '15%' }}>{submission.status}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button style={buttonStyle} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => console.log('View/Edit pressed', submission._id)}>View/Edit</button>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Ready' ? 'black' : 'gray',
+                                    cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => console.log('View/Edit pressed', submission._id)}
+                                disabled={submission.status !== 'Ready'}
+                            >
+                                View/Edit
+                            </button>
                             <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => handleRun(submission._id)} disabled={submission.status !== 'Ready'}>Run</button>
                             <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => console.log("view results")} disabled={submission.status !== 'Executed'}>View Results</button>
-                            <button style={buttonStyle} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => handleDelete(submission._id)}>Delete</button>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Running' ? 'gray' : 'black',  // Changes color to gray when status is 'Running'
+                                    cursor: submission.status === 'Running' ? 'not-allowed' : 'pointer'  // Changes cursor to 'not-allowed' when status is 'Running'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => handleDelete(submission._id)}
+                                disabled={submission.status === 'Running'}  // Disables button when status is 'Running'
+                            >
+                                Delete
+                            </button>
+
                         </div>
                     </div>
                 )) : (
