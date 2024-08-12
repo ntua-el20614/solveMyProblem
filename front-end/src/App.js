@@ -39,7 +39,7 @@ function App() {
             <Route path="/homepage" element={<Homepage />} />
             <Route path="/new_submission" element={<NewSubmission />} />
             <Route path="/edit_submission" element={<EditSubmission />} />
-            <Route path="/view_results" element={<ViewResults />} />
+            <Route path="/view_results/:id" element={<ViewResults />} />
             <Route path="/my_credits" element={<Credits />} />
           </Routes>
         </div>
