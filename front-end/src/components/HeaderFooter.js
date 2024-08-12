@@ -11,7 +11,7 @@ const colors = {
 };
 
 function Header({ username = '' }) {
-    const isLoggedIn = !!Cookies.get('user');
+    const isLoggedIn = !!Cookies.get('user_SMP');
 
     return (
         <header style={{ 

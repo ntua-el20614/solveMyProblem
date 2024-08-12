@@ -16,7 +16,7 @@ export default function RegisterPage({ setUsername }) {
     // Clear cookies on component mount if needed
     Cookies.remove('token');
     setUsername('');
-    Cookies.remove('user');
+    Cookies.remove('user_SMP');
   }, []);
 
   const handleRegister = async (event) => {
@@ -44,7 +44,7 @@ export default function RegisterPage({ setUsername }) {
 
       if (response.ok) {
         // Registration successful
-        Cookies.set('user', usernameInput); // Store username in a cookie
+        Cookies.set('user_SMP', usernameInput); // Store username in a cookie
         setUsername(usernameInput); // Update the username state in App component
         navigate('/homepage'); // Navigate to homepage
       } else {
