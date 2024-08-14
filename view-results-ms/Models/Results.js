@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const problemSchema = new mongoose.Schema({
+  id: {
+    type: mongoose.Schema.Types.ObjectId,
+    unique: true
+  },
   output_file: {
     type: String,
     required: true
