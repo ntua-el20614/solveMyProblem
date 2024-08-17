@@ -48,19 +48,18 @@ async function processMessage(channel) {
 
     // Execute the command
     exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error executing command: ${error.message}`);
-      } else if (stderr) {
-        console.error(`stderr: ${stderr}`);
-      } else {
           try {
-            output_file = stdout;
+            if (error) {
+              output_file= error.message;
+            }
+            else {
+              output_file = stdout;
+            }
             publishToQueue("solvedProblems", { problemID, createdBy, output_file, problemID });
           } catch (error) {
               console.error('Error saving results:', error);
           } 
           console.log(`Mr/Mrs ${createdBy} here are your results: ${stdout}`);
-      }
 
       // Acknowledge the message
       channel.ack(msg);
