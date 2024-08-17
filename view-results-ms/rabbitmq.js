@@ -48,6 +48,7 @@ exports.handleMessage = async (message) => {
 
     // Create a new SolvedProblems object
     const newResult = new SolvedProblems({
+      _id: problemID,
       output_file,
       createdBy,
       status: 'solved' // Ensure the status is set to 'solved'

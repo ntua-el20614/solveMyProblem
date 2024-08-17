@@ -17,4 +17,4 @@ const problemSchema = new mongoose.Schema({
   createdBy: { type: String, required: true }
 }, { collection: 'solvedProblem' });
 
-module.exports = mongoose.model('SolvedProblems', problemSchema);
+module.exports = mongoose.model('Results', problemSchema);
