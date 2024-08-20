@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 
 const problemSchema = new mongoose.Schema({
-  id: {
+  _id: {
     type: mongoose.Schema.Types.ObjectId,
-    unique: true
   },
   output_file: {
     type: String,
@@ -17,4 +16,4 @@ const problemSchema = new mongoose.Schema({
   createdBy: { type: String, required: true }
 }, { collection: 'solvedProblem' });
 
-module.exports = mongoose.model('SolvedProblems', problemSchema);
+module.exports = mongoose.model('Results', problemSchema);

@@ -45,23 +45,37 @@ exports.handleMessage = async (message) => {
   try {
     const messageContent = JSON.parse(message.content.toString());
     const { output_file, createdBy, problemID } = messageContent;
+    console.log('Message content:', messageContent);
+
+    // Validate problemID
+    if (!mongoose.Types.ObjectId.isValid(problemID)) {
+      console.error(`Invalid ObjectId: ${problemID}`);
+      return; // Exit if ID is invalid
+    }
+
+    const objectId = new mongoose.Types.ObjectId(problemID);
 
     // Create a new SolvedProblems object
     const newResult = new SolvedProblems({
+      _id: objectId, // Use the validated ObjectId
       output_file,
       createdBy,
       status: 'solved' // Ensure the status is set to 'solved'
     });
+    console.log('New result:', newResult);
 
     // Save the result to the database
     await newResult.save();
     console.log('Result saved to the database:', newResult);
-    // send the _id and status to update
-    publishToQueue("status_queue", { id: problemID, newStatus: "solved" });
+
+    // Send the _id and status to update
+    publishToQueue("status_queue", { id: objectId, newStatus: "solved" });
+
   } catch (error) {
     console.error('Failed to handle message', error);
   }
 };
+
 
 async function publishToQueue (queueName, message) {
   if (!channel) {
