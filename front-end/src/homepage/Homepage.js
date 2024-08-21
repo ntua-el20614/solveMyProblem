@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Homepage() {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
     const [submissions, setSubmissions] = useState([]);
 
 
@@ -67,6 +68,7 @@ function Homepage() {
                 ...sub,
                 status: getStatusDisplay(sub.status)
             })));
+            setIsLoading(false)
         } catch (error) {
             console.error('Error fetching submissions:', error);
         }
@@ -111,7 +113,31 @@ function Homepage() {
             console.error('Error deleting submission:', error);
         }
     }
-
+    if(isLoading){
+        return (
+            <div style={{ textAlign: 'center', marginTop: '75px' }}>
+                <PageName name="Home Page" />
+                <div style={{ maxHeight: '450px', overflowY: 'auto', padding: '5px', border: '2px solid #0cd', borderRadius: '5px', margin: '10px' }}>
+                    { isLoading && (
+                        <div style={{
+                            borderRadius: "20px",
+                            padding: "10px",
+                            backgroundColor: "#f9f9f9",
+                            height: "430px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center"  // This will center the text vertically
+                        }}>
+                            Loading submissions ...
+                        </div>
+                    )}
+                </div>
+                <div style={{ textAlign: 'left', paddingLeft: '20px', paddingTop: '20px' }}>
+                    <StyledButton to={"/new_submission"}>New Problem</StyledButton>
+                </div>
+            </div>
+            )
+    }
     return (
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
             <PageName name="Home Page" />
