@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { PageName } from '../components/SecondaryHeader';
 import Results from '../components/Results';
+import { StyledButton } from '../components/Button';
 
 function Viewresults() {
     const { id } = useParams();
@@ -10,7 +11,7 @@ function Viewresults() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        
+
         const fetchResults = async () => {
             const username = Cookies.get('user_SMP');
             const url = `http://localhost:4002/view/${(username)}`; // Use username in the URL
@@ -101,13 +102,15 @@ function Viewresults() {
                 </div>
 
             </div>
-            <h3 style={{ textAlign: 'left', margin: '50px 0 5px 10%' }}>Results</h3>
+            <h3 style={{ textAlign: 'left', margin: '10px 0 5px 10%' }}>Results</h3>
 
             <div style={{ marginTop: '0px', margin: 'auto', width: '85%', flex: 1, height: '50%', maxHeight: '390px', overflowY: 'scroll', border: '4px solid black', backgroundColor: 'gray', padding: '10px' }}>
                 <Results data={data} />
             </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '20px 10%' }}>
+                <StyledButton to="/homepage"> Return </StyledButton>
+            </div>
         </div>
-
     );
 }
 
