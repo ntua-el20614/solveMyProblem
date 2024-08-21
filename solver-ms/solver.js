@@ -32,6 +32,7 @@ async function processMessage(channel) {
     const param2 = data.param2;
     const param3 = data.param3;
     const createdBy = data.createdBy;
+    const name = data.name;
 
     // Create a temporary file for the input JSON
     const tempFilePath = path.join(os.tmpdir(), 'input_data.json');
@@ -55,7 +56,7 @@ async function processMessage(channel) {
             else {
               output_file = stdout;
             }
-            publishToQueue("solvedProblems", { problemID, createdBy, output_file, problemID });
+            publishToQueue("solvedProblems", { problemID, createdBy, output_file, problemID, param1, param2, param3, name });
           } catch (error) {
               console.error('Error saving results:', error);
           } 

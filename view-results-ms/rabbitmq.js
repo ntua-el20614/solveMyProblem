@@ -44,7 +44,7 @@ exports.connectRabbitMQ = (retries = 5) => {
 exports.handleMessage = async (message) => {
   try {
     const messageContent = JSON.parse(message.content.toString());
-    const { output_file, createdBy, problemID } = messageContent;
+    const { output_file, createdBy, problemID, param1, param2, param3, name } = messageContent;
     console.log('Message content:', messageContent);
 
     // Validate problemID
@@ -60,7 +60,12 @@ exports.handleMessage = async (message) => {
       _id: objectId, // Use the validated ObjectId
       output_file,
       createdBy,
-      status: 'solved' // Ensure the status is set to 'solved'
+      status: 'solved', // Ensure the status is set to 'solved',
+      param1,
+      param2,
+      param3,
+      name,
+      executedOn: new Date()
     });
     console.log('New result:', newResult);
 
