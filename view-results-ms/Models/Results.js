@@ -4,6 +4,26 @@ const problemSchema = new mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
   },
+  name: {
+    type: String,
+    required: true
+  },
+  param1: {
+    type: String,
+    required: true
+  },
+  param2: {
+    type: String,
+    required: true
+  },
+  param3: {
+    type: String,
+    required: true
+  },
+  executedOn: {
+    type: Date,
+    required: true
+  },
   output_file: {
     type: String,
     required: true
