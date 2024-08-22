@@ -38,7 +38,7 @@ function App() {
             <Route path="/register" element={<RegisterPage setUsername={setUsername}/>} />
             <Route path="/homepage" element={<Homepage />} />
             <Route path="/new_submission" element={<NewSubmission />} />
-            <Route path="/edit_submission" element={<EditSubmission />} />
+            <Route path="/edit_submission/:id" element={<EditSubmission />} />
             <Route path="/view_results/:id" element={<ViewResults />} />
             <Route path="/my_credits" element={<Credits />} />
           </Routes>
