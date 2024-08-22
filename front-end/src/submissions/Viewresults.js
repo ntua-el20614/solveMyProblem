@@ -10,6 +10,17 @@ function Viewresults() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    function formatDate(isoDateString) {
+        const optionsDate = { day: '2-digit', month: '2-digit' }; // Options for the date
+        const optionsTime = { hour: '2-digit', minute: '2-digit' }; // Options for the time
+    
+        const date = new Date(isoDateString);
+        const formattedDate = new Intl.DateTimeFormat('default', optionsDate).format(date);
+        const formattedTime = new Intl.DateTimeFormat('default', optionsTime).format(date);
+    
+        return `${formattedDate} ${formattedTime}`;
+    }
+
     useEffect(() => {
 
         const fetchResults = async () => {
@@ -55,7 +66,7 @@ function Viewresults() {
                     <span>ID: {data._id}</span>
                     <span>Name: {data.name}</span>
                     <span>Creator: {data.createdBy}</span>
-                    <span>Executed on: {data.executedOn}</span>
+                    <span>Executed on: {formatDate(data.executedOn)}</span>
                 </div>
             </div>
             <h3 style={{ textAlign: 'left', margin: '40px 0 5px 10%' }}>Metadata</h3>
