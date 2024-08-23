@@ -171,15 +171,15 @@ function NewSubmission() {
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', margin: '20px' }}>
                 <div style={{ width: '20%', flex: 1, height: '230px', overflowY: 'scroll', border: '4px solid black', backgroundColor: 'gray', padding: '10px' }}>
                     <div style={{ marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>
-                        Parameter 1:
+                        Available vehicles:
                         <input type="text" value={param1} onChange={(e) => setParam1(e.target.value)} style={{ width: '90%', padding: '5px', margin: '5px 0' }} />
                     </div>
                     <div style={{ marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>
-                        Parameter 2:
+                        Starting index location:
                         <input type="text" value={param2} onChange={(e) => setParam2(e.target.value)} style={{ width: '90%', padding: '5px', margin: '5px 0' }} />
                     </div>
                     <div style={{ backgroundColor: 'lightgray', padding: '5px' }}>
-                        Parameter 3:
+                        Maximum distance for each vehicle:
                         <input type="text" value={param3} onChange={(e) => setParam3(e.target.value)} style={{ width: '90%', padding: '5px', margin: '5px 0' }} />
                     </div>
                 </div>
