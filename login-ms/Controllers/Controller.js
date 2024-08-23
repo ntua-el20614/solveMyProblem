@@ -97,3 +97,91 @@ exports.getUsers = async (req, res, next) => {
 exports.getHealth = async (req, res, next) => {
   res.status(200).json({ message: 'Login microservice is healthy' });
 };
+
+exports.viewTempCredits = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ username: user.username, tempCredits: user.using_tokens });
+  } catch (error) {
+    console.error('Error retrieving temp credits:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+exports.viewCredits = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ username: user.username, credits: user.actual_tokens });
+  } catch (error) {
+    console.error('Error retrieving credits:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+exports.addTempCredits = async (req, res) => {
+  const { username, value } = req.params;  // Value from URL parameter (+1 or -1)
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Convert value to a number and update the user's temporary credits (using_tokens)
+    const creditChange = parseInt(value, 10);
+    if (isNaN(creditChange)) {
+      return res.status(400).json({ message: 'Invalid value. Must be +1 or -1' });
+    }
+
+    user.using_tokens += creditChange;
+
+    await user.save();
+
+    res.status(200).json({ message: 'Temporary credits updated successfully', tempCredits: user.using_tokens });
+  } catch (error) {
+    console.error('Error updating temporary credits:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+exports.addCredits = async (req, res) => {
+  const { username, value } = req.params;  // Value from URL parameter (+1 or -1)
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Convert value to a number and update the user's actual credits (actual_tokens)
+    const creditChange = parseInt(value, 10);
+    if (isNaN(creditChange)) {
+      return res.status(400).json({ message: 'Invalid value. Must be +1 or -1' });
+    }
+
+    user.actual_tokens += creditChange;
+
+    await user.save();
+
+    res.status(200).json({ message: 'Credits updated successfully', credits: user.actual_tokens });
+  } catch (error) {
+    console.error('Error updating credits:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
