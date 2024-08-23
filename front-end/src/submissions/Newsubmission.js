@@ -168,6 +168,7 @@ function NewSubmission() {
     return (
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
             <PageName name="New Submission" />
+            <h2 style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', margin: '20px' }}>Input Data</h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', margin: '20px' }}>
                 <div style={{ width: '20%', flex: 1, height: '230px', overflowY: 'scroll', border: '4px solid black', backgroundColor: 'gray', padding: '10px' }}>
                     <div style={{ marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>
