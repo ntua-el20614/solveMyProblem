@@ -69,6 +69,7 @@ exports.submitProblemToQueue = (problem) => {
     channel.sendToQueue('problem_queue', Buffer.from(JSON.stringify(problem)), {
       persistent: true
     });
+    updateProblemStatus(problem._id, 'in-queue');
   } else {
     console.error('Channel is not available');
   }
@@ -78,6 +79,7 @@ const updateProblemStatus = async (problemId, newStatus) => {
   try {
     const updatedProblem = await SubmitedProblems.findByIdAndUpdate(problemId, { status: newStatus }, { new: true });
     if (updatedProblem) {
+      console.log(`Problem ${problemId} updated with status ${newStatus}`);
     } else {
       console.error(`Problem ${problemId} not found`);
     }
