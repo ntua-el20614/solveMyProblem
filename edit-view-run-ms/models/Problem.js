@@ -21,7 +21,7 @@ const problemSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['submitted', 'in-progress', 'solved'],
+    enum: ['submitted', 'in-progress', 'solved', 'in-queue'],
     default: 'submitted'
   },
   createdOn: {
