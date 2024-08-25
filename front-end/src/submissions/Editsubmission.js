@@ -186,8 +186,12 @@ function EditSubmission() {
 
     return (
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
+
             <PageName name="Edit Submission" />
             <div style={{ margin: '-40px 120px' }}>
+                {
+                    console.log(data)
+                }
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>ID: {data._id}</span>
                     <span>Name: {data.name}</span>
@@ -220,46 +224,46 @@ function EditSubmission() {
                     <input value={inputs.name} onChange={(e) => handleChange('name', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
                 </div>
             </div>{modalVisible && (
-    <>
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            zIndex: 999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        }}>
-            <div style={{
-                backgroundColor: '#fff',
-                padding: '20px',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.2)',
-                maxWidth: '400px',
-                width: '90%',
-                textAlign: 'center',
-            }}>
-                <p style={{ fontSize: '16px', margin: '0 0 20px' }}>{modalMessage}</p>
-                <button 
-                    onClick={() => setModalVisible(false)}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#006400',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
+                <>
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        zIndex: 999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}>
-                    Close
-                </button>
-            </div>
-        </div>
-    </>
-)}
+                        <div style={{
+                            backgroundColor: '#fff',
+                            padding: '20px',
+                            borderRadius: '8px',
+                            boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.2)',
+                            maxWidth: '400px',
+                            width: '90%',
+                            textAlign: 'center',
+                        }}>
+                            <p style={{ fontSize: '16px', margin: '0 0 20px' }}>{modalMessage}</p>
+                            <button
+                                onClick={() => setModalVisible(false)}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#006400',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                }}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
 
 
 

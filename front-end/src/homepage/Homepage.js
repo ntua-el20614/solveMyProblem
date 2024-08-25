@@ -256,11 +256,14 @@ function Homepage() {
                             <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '15%' }}>{submission.status}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
+                            {
+                                //console.log(submission.status, submission.status !== 'Ready' &&  (submission.status !== 'In Queue'))
+                            }
                             <button
                                 style={{
                                     ...buttonStyle,
-                                    color: submission.status === 'Ready' ? 'black' : 'gray',
-                                    cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed'
+                                    color: !(submission.status !== 'Ready' && (submission.status !== 'In Queue')) ? 'black' : 'gray',
+                                    cursor: !(submission.status !== 'Ready' && (submission.status !== 'In Queue')) ? 'pointer' : 'not-allowed'
                                 }}
                                 onMouseDown={handleMouseDown}
                                 onMouseUp={handleMouseUp}
@@ -268,9 +271,11 @@ function Homepage() {
                                 onClick={() => {
                                     console.log("view/edit", submission._id); navigate(`/edit_submission/${submission._id}`)
                                 }}
-                                disabled={submission.status !== 'Ready'}
+                                disabled={submission.status !== 'Ready' && (submission.status !== 'In Queue')}
                             >
-                                View/Edit
+                                {
+                                    (submission.status === 'In Queue') ? 'View' : 'Edit'
+                                }
                             </button>
 
                             <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
