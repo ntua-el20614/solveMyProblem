@@ -12,11 +12,11 @@ const userSchema = new mongoose.Schema({
   },
   actual_tokens: {
     type: Number,
-    default: 50
+    default: 10
   },
   using_tokens: {
     type: Number,
-    default: 50
+    default: 10
   },
   isAdmin: {
     type: Boolean,
