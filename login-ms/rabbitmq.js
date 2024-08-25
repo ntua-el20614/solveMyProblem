@@ -1,4 +1,7 @@
-/*const amqp = require('amqplib/callback_api');
+const amqp = require('amqplib/callback_api');
+const mongoose = require('mongoose');
+const User = require('./models/User');
+const { c } = require('tar');
 
 let channel = null;
 const rabbitURI = process.env.RABBITMQ_URL;
@@ -20,30 +23,41 @@ exports.connectRabbitMQ = (retries = 5) => {
       }
       channel = ch;
       console.log('Connected to RabbitMQ');
+
+      const creditQueue = 'credit_queue';
+      channel.assertQueue(creditQueue, { durable: true });
+
+      // Consume from credit_queue
+      channel.consume(creditQueue, (msg) => {
+        if (msg !== null) {
+          console.log('Received message from credit_queue:', msg.content.toString());
+          exports.handleCreditMessage(msg);
+          channel.ack(msg);
+        }
+      });
     });
   });
 };
 
-exports.publishToQueue = (queueName, message) => {
-  if (!channel) {
-    console.error('Channel not set. Call connectRabbitMQ() first.');
-    return;
-  }
-  channel.assertQueue(queueName, { durable: true });
-  channel.sendToQueue(queueName, Buffer.from(message));
-};
-
-exports.consumeFromQueue = (queueName, callback) => {
-  if (!channel) {
-    console.error('Channel not set. Call connectRabbitMQ() first.');
-    return;
-  }
-  channel.assertQueue(queueName, { durable: true });
-  channel.consume(queueName, (msg) => {
-    if (msg !== null) {
-      callback(msg.content.toString());
-      channel.ack(msg);
+// New function to handle messages from credit_queue
+exports.handleCreditMessage = async (message) => {
+    const messageContent = JSON.parse(message.content.toString());
+    const { createdBy } = messageContent;
+    
+    try {
+      const myUser = await User.findOne({ username: createdBy });
+      const creditChange = -1;
+  
+      if (myUser) {
+      myUser.actual_tokens += creditChange;
+  
+      await myUser.save();
+  
+      console.log('Credits updated successfully');
+      } else {
+        console.log(`${createdBy} not found`);
+      }
+    } catch (error) {
+      console.error('Error updating credits:', error);
     }
-  });
-};
-*/
+  };
