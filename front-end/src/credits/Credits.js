@@ -106,11 +106,16 @@ function Credits() {
                 )}
 
             </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '20px 10%' }}>
+                <StyledButton to='/homepage'>Return</StyledButton>
+            </div>
             {confirmationMessage &&
                 <div style={{ margin: '20px auto', padding: '20px', width: '50%', border: '4px solid black', borderRadius: '15px', fontWeight: 'bold', fontSize: '30px', color: '#1aa90f', backgroundColor: '#bcbcbc', display: confirmationMessage ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center' }}>
                     {confirmationMessage}
                 </div>
             }
+            
         </div>
     );
 }
