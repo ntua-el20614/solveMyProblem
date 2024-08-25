@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { PageName } from '../components/SecondaryHeader';
 import Cookies from 'js-cookie';
+import { StyledButton } from '../components/Button';
 
 function NewSubmission() {
     const [file, setFile] = useState(null);
@@ -36,7 +37,7 @@ function NewSubmission() {
         transition: 'all 0.1s ease-in-out'
     };
 
-    
+
     const handleMouseDown = (e) => {
         e.currentTarget.style.transform = 'translateY(2px)';
         e.currentTarget.style.boxShadow = '0 1px #666';
@@ -47,7 +48,7 @@ function NewSubmission() {
         e.currentTarget.style.boxShadow = '0 2px #666';
     };
 
-    
+
     const handleTextChange = (event) => {
         setSubmissionName(event.target.value);
         const textareaLineHeight = 24; // Approx line height in px
@@ -82,7 +83,7 @@ function NewSubmission() {
     const handleFileSelection = (file) => {
         if (file && file.type === "application/json") {
             setFile(file);
-            setMessage(''); 
+            setMessage('');
         } else {
             displayMessage("Please select a JSON file.", '#620000');
             setFile(null);
@@ -100,7 +101,7 @@ function NewSubmission() {
             displayMessage("Please select a JSON file.", '#620000');
             return;
         }
-        if(!param2 || param2 === '') {
+        if (!param2 || param2 === '') {
             setParam2('0');
         }
         if (!param1 || !param3 || param1 === '' || param3 === '') {
@@ -109,7 +110,7 @@ function NewSubmission() {
         }
         if (!submissionName) {
             setSubmissionName('');
-            
+
         }
         console.log(param2)
         //string += param1 + " - " + param2 + " - " + param3 + " - " + submissionName;
@@ -125,26 +126,27 @@ function NewSubmission() {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                // Check if the error object exists and display appropriate error messages
-                console.error('Error:', data.error);
-                if (data.error._message) {
-                    displayMessage(data.error._message, '#620000',"! try again!"); // Display server validation message
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    // Check if the error object exists and display appropriate error messages
+                    console.error('Error:', data.error);
+                    if (data.error._message) {
+                        displayMessage(data.error._message, '#620000', "! try again!"); // Display server validation message
+                    } else {
+                        displayMessage('Error submitting form.', '#620000'); // Generic error message
+                    }
                 } else {
-                    displayMessage('Error submitting form.', '#620000'); // Generic error message
+                    console.log('Success:', data);
+                    displayMessage('Submission successful!', '#90EE90'); // Display success message
                 }
-            } else {
-                console.log('Success:', data);
-                displayMessage('Submission successful!', '#90EE90'); // Display success message
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            displayMessage('An error occurred while submitting the form.', '#620000'); // Display network or unexpected error
-        });};
-        
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                displayMessage('An error occurred while submitting the form.', '#620000'); // Display network or unexpected error
+            });
+    };
+
 
     const handleClear = () => {
         setFile(null);
@@ -155,7 +157,7 @@ function NewSubmission() {
     };
 
     const displayMessage = (text, color, message = "") => {
-        setMessage(text+"\n"+message);
+        setMessage(text + "\n" + message);
         setMessageStyle({
             color: color,
             fontWeight: 'bold'
@@ -203,15 +205,17 @@ function NewSubmission() {
                     <input ref={fileInputRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleFileChange} />
                 </div>
                 <div style={{ width: '80%', display: 'flex', justifyContent: 'flex-end', paddingRight: '20px' }}>
-                    <button onClick={handleSubmit} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}  style={buttonStyle}>Create</button>
-                    <button onClick={handleClear}  onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={buttonStyle}>Cancel</button>
+                    <button onClick={handleSubmit} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={buttonStyle}>Create</button>
+                    <button onClick={handleClear} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={buttonStyle}>Cancel</button>
                 </div>
             </div>
 
             <div style={{ margin: '20px auto', padding: '20px', width: '94%', border: '4px solid black', backgroundColor: 'gray', display: message ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', color: messageStyle.color, fontWeight: messageStyle.fontWeight }}>
                 {message}
             </div>
-
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '20px 10%' }}>
+                <StyledButton to='/homepage'>Return</StyledButton>
+            </div>
         </div>
     );
 }

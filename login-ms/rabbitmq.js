@@ -1,8 +1,7 @@
-const amqp = require('amqplib/callback_api');
+/*const amqp = require('amqplib/callback_api');
 
 let channel = null;
 const rabbitURI = process.env.RABBITMQ_URL;
-
 exports.connectRabbitMQ = (retries = 5) => {
   amqp.connect(rabbitURI, (err, conn) => {
     if (err) {
@@ -24,6 +23,14 @@ exports.connectRabbitMQ = (retries = 5) => {
   });
 };
 
+exports.publishToQueue = (queueName, message) => {
+  if (!channel) {
+    console.error('Channel not set. Call connectRabbitMQ() first.');
+    return;
+  }
+  channel.assertQueue(queueName, { durable: true });
+  channel.sendToQueue(queueName, Buffer.from(message));
+};
 
 exports.consumeFromQueue = (queueName, callback) => {
   if (!channel) {
@@ -38,3 +45,4 @@ exports.consumeFromQueue = (queueName, callback) => {
     }
   });
 };
+*/

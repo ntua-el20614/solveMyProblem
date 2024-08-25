@@ -186,20 +186,3 @@ exports.addCredits = async (req, res) => {
   }
 };
 
-consumeFromQueue('user_queue', async (message) => {
-  const { username } = JSON.parse(message);
-  if (username) {
-    try {
-      const user = await User.findOne({ username });
-      if (user && user.actual_tokens > 0) {
-        user.actual_tokens -= 1;
-        await user.save();
-        console.log(`User ${username} tokens updated successfully. Remaining tokens: ${user.actual_tokens}`);
-      } else {
-        console.error(`User ${username} not found or insufficient tokens.`);
-      }
-    } catch (error) {
-      console.error('Error updating user tokens:', error);
-    }
-  }
-});
