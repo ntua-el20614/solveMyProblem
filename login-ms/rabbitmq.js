@@ -2,6 +2,7 @@
 
 let channel = null;
 const rabbitURI = process.env.RABBITMQ_URL;
+
 exports.connectRabbitMQ = (retries = 5) => {
   amqp.connect(rabbitURI, (err, conn) => {
     if (err) {

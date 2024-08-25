@@ -56,9 +56,7 @@ async function processMessage(channel) {
             else {
               output_file = stdout;
             }
-          
             publishToQueue("solvedProblems", { problemID, createdBy, output_file, problemID, param1, param2, param3, name });
-        
           } catch (error) {
               console.error('Error saving results:', error);
           } 
