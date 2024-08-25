@@ -64,12 +64,21 @@ exports.handleMessage = (message) => {
 exports.getLatestUsername = () => latestUsername;
 
 
-exports.submitProblemToQueue = (problem) => {
+exports.submitProblemToQueue = async (problem) => {
   if (channel) {
+    try {
+      const updatedProblem = await SubmitedProblems.findByIdAndUpdate(problemId, { status: newStatus }, { new: true });
+      if (updatedProblem) {
+        console.log(`Problem ${problemId} updated with status ${newStatus}`);
+      } else {
+        console.error(`Problem ${problemId} not found`);
+      }
+    } catch (error) {
+      console.error('Failed to update problem status', error);
+    }
     channel.sendToQueue('problem_queue', Buffer.from(JSON.stringify(problem)), {
       persistent: true
     });
-    updateProblemStatus(problem._id, 'in-queue');
   } else {
     console.error('Channel is not available');
   }
