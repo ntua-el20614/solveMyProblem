@@ -13,6 +13,8 @@ function EditSubmission() {
     const [data, setData] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
+    const [view, setViewMode] = useState(false);
+
 
     const [loading, setLoading] = useState(true);
     const [inputs, setInputs] = useState({
@@ -160,6 +162,9 @@ function EditSubmission() {
             const results = await response.json();
             const result = results.find(result => result._id === id);
             if (result) {
+                if (result.status === 'in-queue') {
+                    setViewMode(true);
+                }
                 setData(result);
                 setInputs({
                     param1: result.param1,
@@ -186,8 +191,12 @@ function EditSubmission() {
 
     return (
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
-            <PageName name="Edit Submission" />
+            {view ? <PageName name="View Submission" /> : <PageName name="Edit Submission" />}
+
             <div style={{ margin: '-40px 120px' }}>
+                {
+                    console.log(data)
+                }
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>ID: {data._id}</span>
                     <span>Name: {data.name}</span>
@@ -202,64 +211,71 @@ function EditSubmission() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ width: '20%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Parameter 1:</div>
                     <div style={{ width: '50%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Cars available</div>
-                    <input value={inputs.param1} onChange={(e) => handleChange('param1', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
+                    <input
+                        disabled={view}
+                        value={inputs.param1} onChange={(e) => handleChange('param1', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ width: '20%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Parameter 2:</div>
                     <div style={{ width: '50%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Starting point</div>
-                    <input value={inputs.param2} onChange={(e) => handleChange('param2', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
+                    <input
+                        disabled={view}
+                        value={inputs.param2} onChange={(e) => handleChange('param2', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ width: '20%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Parameter 3:</div>
                     <div style={{ width: '50%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Maximum distance for each car</div>
-                    <input value={inputs.param3} onChange={(e) => handleChange('param3', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
+                    <input
+                        disabled={view} value={inputs.param3} onChange={(e) => handleChange('param3', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ width: '20%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Name:</div>
                     <div style={{ width: '50%', marginBottom: '10px', backgroundColor: 'lightgray', padding: '5px' }}>Submission's name</div>
-                    <input value={inputs.name} onChange={(e) => handleChange('name', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
+                    <input
+                        disabled={view}
+                        value={inputs.name} onChange={(e) => handleChange('name', e.target.value)} style={{ width: '20%', marginBottom: '10px', backgroundColor: 'white', padding: '5px', textAlign: 'center' }} />
                 </div>
             </div>{modalVisible && (
-    <>
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            zIndex: 999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        }}>
-            <div style={{
-                backgroundColor: '#fff',
-                padding: '20px',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.2)',
-                maxWidth: '400px',
-                width: '90%',
-                textAlign: 'center',
-            }}>
-                <p style={{ fontSize: '16px', margin: '0 0 20px' }}>{modalMessage}</p>
-                <button 
-                    onClick={() => setModalVisible(false)}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#006400',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
+                <>
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        zIndex: 999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}>
-                    Close
-                </button>
-            </div>
-        </div>
-    </>
-)}
+                        <div style={{
+                            backgroundColor: '#fff',
+                            padding: '20px',
+                            borderRadius: '8px',
+                            boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.2)',
+                            maxWidth: '400px',
+                            width: '90%',
+                            textAlign: 'center',
+                        }}>
+                            <p style={{ fontSize: '16px', margin: '0 0 20px' }}>{modalMessage}</p>
+                            <button
+                                onClick={() => setModalVisible(false)}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#006400',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                }}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
 
 
 
@@ -300,16 +316,20 @@ function EditSubmission() {
                         borderRight: '2px solid white',
                         flexDirection: 'column'
                     }}
+
+                    disabled={view}
                     onDrop={handleFileDrop}
                     onDragOver={handleDragOver}
                 >
                     <input
+                        disabled={view}
                         type="file"
                         onChange={handleFileChange}
                         style={{ display: 'none' }}
                         id="fileUpload"
                     />
                     <label
+                        disabled={view}
                         htmlFor="fileUpload"
                         style={{
                             width: '80%',
@@ -341,10 +361,12 @@ function EditSubmission() {
                 <div>
                     <StyledButton to="/homepage">Return</StyledButton>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginRight: '10px' }}>
-                    <StyledButton onClick={handleCancel} style={{ padding: '10px' }}>Cancel</StyledButton>
-                    <StyledButton onClick={handleDone} style={{ padding: '10px' }}>Done</StyledButton>
-                </div>
+                {!view && (
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginRight: '10px' }}>
+                        <StyledButton onClick={handleCancel} style={{ padding: '10px' }}>Cancel</StyledButton>
+                        <StyledButton onClick={handleDone} style={{ padding: '10px' }}>Done</StyledButton>
+                    </div>)
+                }
             </div>
         </div>
     )
