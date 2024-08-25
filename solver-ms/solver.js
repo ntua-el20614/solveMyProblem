@@ -56,7 +56,10 @@ async function processMessage(channel) {
             else {
               output_file = stdout;
             }
+          
             publishToQueue("solvedProblems", { problemID, createdBy, output_file, problemID, param1, param2, param3, name });
+          
+            publishToQueue("user_queue", {  createdBy });
           } catch (error) {
               console.error('Error saving results:', error);
           } 
@@ -81,10 +84,12 @@ async function connectRabbitMQ() {
       const queue = 'problem_queue';
       const queue1 = 'solvedProblems';
       const queue2 = 'status_queue';
+      const queue3 = 'user_queue';
   
       await channel.assertQueue(queue, { durable: true });
       await channel.assertQueue(queue1, { durable: true });
       await channel.assertQueue(queue2, { durable: true });
+      await channel.assertQueue(queue3, { durable: true });
       console.log("Connected to RabbitMQ");
   
       channel.consume(queue, async (msg) => {
