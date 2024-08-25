@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 
 function Homepage() {
     const navigate = useNavigate();
+    const [credits, setCredits] = useState(0);
+    const [tempCredits, setTempCredits] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [submissions, setSubmissions] = useState([]);
 
@@ -15,7 +17,7 @@ function Homepage() {
         const date = new Date(dateString);
         //const formattedTime = date.toLocaleTimeString('en-US', { timeStyle: 'short' }); // Gets time in HH:MM AM/PM format
         const formattedDate = date.toLocaleDateString('en-US'); // Gets date in MM/DD/YYYY format
-        return `${formattedDate}`;//${formattedTime} 
+        return `${formattedDate}`;
     };
 
     const buttonStyle = {
@@ -54,8 +56,34 @@ function Homepage() {
                 return "Running";
             case "solved":
                 return "Executed";
+            case "in-queue":
+                return "In Queue";
             default:
                 return "Unknown Status";
+        }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fetchCredits = async () => {
+
+        const username = Cookies.get('user_SMP');
+        try {
+            const creditsResponse = await fetch(`http://localhost:4001/view_credits/${username}`);
+            if (creditsResponse.ok) {
+                const creditsData = await creditsResponse.json();
+                setCredits(creditsData.credits);
+            } else {
+                console.error('Failed to fetch credits', await creditsResponse.text());
+            }
+
+            const tempCreditsResponse = await fetch(`http://localhost:4001/view_temp_credits/${username}`);
+            if (tempCreditsResponse.ok) {
+                const tempCreditsData = await tempCreditsResponse.json();
+                setTempCredits(tempCreditsData.tempCredits);
+            } else {
+                console.error('Failed to fetch temporary credits', await tempCreditsResponse.text());
+            }
+        } catch (error) {
+            console.error('Error fetching credits:', error);
         }
     };
 
@@ -79,33 +107,87 @@ function Homepage() {
         return () => clearInterval(interval);
     }, [fetchSubmissions]);
 
+    useEffect(() => {
+
+        const interval = setInterval(fetchCredits, 1000); // Calls fetchSubmissions every second
+        return () => clearInterval(interval);
+
+    }, [fetchCredits]);
+
     const handleRun = async (id) => {
-        const postData = {
-            id: id
-        };
-        try {
-            const response = await fetch('http://localhost:4000/finalSubmition', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(postData)
-            });
-            if (response.ok) {
-                console.log('Submission started successfully');
-            } else {
-                console.error('Failed to start submission', await response.text());
+        if (tempCredits > 0) {
+
+            const postData = {
+                id: id
+            };
+            try {
+                const response = await fetch('http://localhost:4000/finalSubmition', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                });
+                if (response.ok) {
+                    console.log('Submission started successfully');
+                    try {
+                        const username = Cookies.get('user_SMP');
+                        const response2 = await fetch(`http://localhost:4001/change_temp_credits/${username}/-1`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username: Cookies.get('user_SMP'), value: -1 })
+                        });
+                        if (response2.ok) {
+                            console.log('Temporary Credits updated successfully -1');
+                        }
+                        else {
+                            console.error('Failed to update temporary credits', await response2.text());
+                        }
+                    }
+                    catch (error) {
+                        console.error('Error updating temporary credits:', error);
+                    }
+                }
+                else {
+                    console.error('Failed to start submission', await response.text());
+                }
+            } catch (error) {
+                console.error('Error sending submission:', error);
             }
-        } catch (error) {
-            console.error('Error sending submission:', error);
+        } else {
+            alert("Please add credits")
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id, status) => {
         try {
             const response = await fetch(`http://localhost:4000/delete?id=${id}`, { method: 'DELETE' });
             if (response.ok) {
                 console.log('Submission deleted successfully');
+                console.log(status);
+                if (status === 'In Queue') {
+                    try {
+                        const username = Cookies.get('user_SMP');
+                        const response2 = await fetch(`http://localhost:4001/change_temp_credits/${username}/1`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username: Cookies.get('user_SMP'), value: -1 })
+                        });
+                        if (response2.ok) {
+                            console.log('Temporary Credits updated successfully +1');
+                        }
+                        else {
+                            console.error('Failed to update temporary credits', await response2.text());
+                        }
+                    }
+                    catch (error) {
+                        console.error('Error updating temporary credits:', error);
+                    }
+                }
             } else {
                 console.error('Failed to delete submission', await response.text());
             }
@@ -113,12 +195,23 @@ function Homepage() {
             console.error('Error deleting submission:', error);
         }
     }
-    if(isLoading){
+    if (isLoading) {
         return (
             <div style={{ textAlign: 'center', marginTop: '75px' }}>
                 <PageName name="Home Page" />
+                <div style={{ marginTop: '-35px', textAlign: 'left', paddingLeft: '20px' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Your Credits:</div>
+                    <div style={{ marginBottom: '10px' }}>
+                        <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Available Credits: -</span>
+                        <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', marginLeft: '10px' }}>Temporary Credits: -</span>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
+                    <h1 style={{ margin: 0 }}>My submissions</h1>
+                    <StyledButton to={"/my_credits"}>Buy Credits</StyledButton>
+                </div>
                 <div style={{ maxHeight: '450px', overflowY: 'auto', padding: '5px', border: '2px solid #0cd', borderRadius: '5px', margin: '10px' }}>
-                    { isLoading && (
+                    {isLoading && (
                         <div style={{
                             borderRadius: "20px",
                             padding: "10px",
@@ -136,11 +229,22 @@ function Homepage() {
                     <StyledButton to={"/new_submission"}>New Problem</StyledButton>
                 </div>
             </div>
-            )
+        )
     }
     return (
         <div style={{ textAlign: 'center', marginTop: '75px' }}>
             <PageName name="Home Page" />
+            <div style={{ marginTop: '-35px', textAlign: 'left', paddingLeft: '20px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Your Credits:</div>
+                <div style={{ marginBottom: '10px' }}>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Available Credits: {credits}</span>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', marginLeft: '10px' }}>Temporary Credits: {tempCredits}</span>
+                </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
+                <h1 style={{ margin: 0 }}>My submissions</h1>
+                <StyledButton to={"/my_credits"}>Buy Credits</StyledButton>
+            </div>
             <div style={{ maxHeight: '450px', overflowY: 'auto', padding: '5px', border: '2px solid #0cd', borderRadius: '5px', margin: '10px' }}>
                 {submissions.length > 0 ? submissions.map(submission => (
                     <div key={submission._id} style={{ margin: '10px', padding: '10px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '10px' }}>
@@ -190,7 +294,7 @@ function Homepage() {
                                 onMouseDown={handleMouseDown}
                                 onMouseUp={handleMouseUp}
                                 onMouseLeave={handleMouseUp}
-                                onClick={() => handleDelete(submission._id)}
+                                onClick={() => handleDelete(submission._id, submission.status)}
                                 disabled={submission.status === 'Running'}  // Disables button when status is 'Running'
                             >
                                 Delete

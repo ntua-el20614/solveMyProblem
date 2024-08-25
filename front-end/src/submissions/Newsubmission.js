@@ -94,7 +94,7 @@ function NewSubmission() {
     };
 
     const handleSubmit = (event) => {
-        let string = "";
+        //let string = "";
         event.preventDefault();
         if (!file) {
             displayMessage("Please select a JSON file.", '#620000');
@@ -112,7 +112,7 @@ function NewSubmission() {
             
         }
         console.log(param2)
-        string += param1 + " - " + param2 + " - " + param3 + " - " + submissionName;
+        //string += param1 + " - " + param2 + " - " + param3 + " - " + submissionName;
         const formData = new FormData();
         formData.append('input_file', file);
         formData.append('param1', param1);
