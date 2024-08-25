@@ -202,8 +202,7 @@ function Homepage() {
                 <div style={{ marginTop: '-35px', textAlign: 'left', paddingLeft: '20px' }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Your Credits:</div>
                     <div style={{ marginBottom: '10px' }}>
-                        <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Available Credits: -</span>
-                        <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', marginLeft: '10px' }}>Temporary Credits: -</span>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Credits: {credits} (available: {tempCredits})</span>
                     </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
@@ -237,8 +236,7 @@ function Homepage() {
             <div style={{ marginTop: '-35px', textAlign: 'left', paddingLeft: '20px' }}>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Your Credits:</div>
                 <div style={{ marginBottom: '10px' }}>
-                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Available Credits: {credits}</span>
-                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', marginLeft: '10px' }}>Temporary Credits: {tempCredits}</span>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Credits: {credits} (available: {tempCredits})</span>
                 </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
