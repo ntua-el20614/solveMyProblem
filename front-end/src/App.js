@@ -15,14 +15,19 @@ import { Header, Footer } from './components/HeaderFooter';
 
 function App() {
 
-  const [username, setUsername] = useState(Cookies.get('user') || '');
+  const [username, setUsername] = useState(Cookies.get('user_SMP') || '');
 
   useEffect(() => {
-    // Update username state if the cookie changes
-    const cookieUsername = Cookies.get('user');
-    if (cookieUsername && cookieUsername !== username) {
-      setUsername(cookieUsername);
-    }
+    // Check for cookie changes every second
+    const interval = setInterval(() => {
+      const cookieUsername = Cookies.get('user_SMP');
+      if (cookieUsername && cookieUsername !== username) {
+        setUsername(cookieUsername);
+      }
+    }, 1000);
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(interval);
   }, [username]);
 
 
