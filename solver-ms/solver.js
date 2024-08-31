@@ -75,7 +75,7 @@ async function processMessage(channel) {
 }
 
 async function connectRabbitMQ() {
-  for (let attempts = 1; attempts <= 10; attempts++) {
+  for (let attempts = 1; attempts <= 1; attempts++) {
     try {
       const connection = await amqp.connect(rabbitmq);
       channel = await connection.createChannel();
@@ -100,8 +100,8 @@ async function connectRabbitMQ() {
       });
       return;
     } catch (error) {
-      console.error(`Failed to connect to RabbitMQ (attempt ${attempts} of 5)`, error);
-      if (attempts === 10) {
+      console.error(`Failed to connect to RabbitMQ (attempt ${attempts} of 1)`, error);
+      if (attempts === 1) {
         console.error("Max retries reached. Exiting.");
         process.exit(1);
       } else {
