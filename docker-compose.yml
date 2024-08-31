@@ -11,6 +11,7 @@ services:
       - app-network
     volumes:
       - mongo-data:/data/db
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -23,6 +24,7 @@ services:
       RABBITMQ_DEFAULT_PASS: password
     networks:
       - app-network
+
   front-end:
     container_name: front-end-react
     restart: unless-stopped
@@ -36,7 +38,7 @@ services:
 
   edit-view-run-ms:
     container_name: edit-view-run-ms
-    restart: unless-stopped
+    restart: always
     build:
       context: ./edit-view-run-ms
       dockerfile: Dockerfile
@@ -49,7 +51,7 @@ services:
 
   login-ms:
     container_name: login-ms
-    restart: unless-stopped
+    restart: always
     build:
       context: ./login-ms
       dockerfile: Dockerfile
@@ -64,7 +66,7 @@ services:
 
   view-results-ms:
     container_name: view-results-ms
-    restart: unless-stopped
+    restart: always
     build:
       context: ./view-results-ms
       dockerfile: Dockerfile
@@ -77,12 +79,10 @@ services:
     
   solver-ms:
     container_name: solver-ms
-    restart: unless-stopped
+    restart: always
     build:
       context: ./solver-ms
       dockerfile: Dockerfile
-    depends_on:
-      - rabbitmq
     networks:
       - app-network
       
