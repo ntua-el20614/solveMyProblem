@@ -43,36 +43,43 @@ exports.connectRabbitMQ = (retries = 1) => {
       channel.assertQueue(creditQueue, { durable: true });
 
       // Consume from credit_queue
-      channel.consume(creditQueue, (msg) => {
+      channel.consume(creditQueue, async (msg) => {
         if (msg !== null) {
           console.log('Received message from credit_queue:', msg.content.toString());
-          exports.handleCreditMessage(msg);
-          channel.ack(msg);
+          try {
+            await exports.handleCreditMessage(msg);  // Await the message handling
+            channel.ack(msg);  // Acknowledge the message only after processing
+          } catch (error) {
+            console.error('Error processing message:', error);
+            // Optionally, you might decide to not acknowledge the message,
+            // which could result in the message being re-delivered depending on your setup.
+          }
         }
       });
     });
   });
 };
 
-// New function to handle messages from credit_queue
+// Function to handle messages from credit_queue
 exports.handleCreditMessage = async (message) => {
   const messageContent = JSON.parse(message.content.toString());
   const { createdBy } = messageContent;
-  
+
   try {
-    const myUser = await User.findOne({ username: createdBy });
-    const creditChange = -1;
+    // Use $inc to atomically update the user's tokens
+    const result = await User.findOneAndUpdate(
+      { username: createdBy },
+      { $inc: { actual_tokens: -1 } },  // Decrement tokens by 1
+      { new: true }  // Return the updated document
+    );
 
-    if (myUser) {
-      myUser.actual_tokens += creditChange;
-
-      await myUser.save();
-
-      console.log('Credits updated successfully');
+    if (result) {
+      console.log(`Credits updated successfully for ${createdBy}: ${result.actual_tokens} tokens remaining`);
     } else {
       console.log(`${createdBy} not found`);
     }
   } catch (error) {
     console.error('Error updating credits:', error);
+    throw error;  // Re-throw the error to be caught in the consume block
   }
 };
