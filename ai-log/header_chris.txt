@@ -1,0 +1,476 @@
+ChatGPT 4o
+
+
+
+You said:
+
+    return (
+        <div style={{ textAlign: 'center', marginTop: '75px' }}>
+            <PageName name="Home Page" />
+            <h1 style={{  }}>My submissions</h1>
+            <div style={{ maxHeight: '450px', overflowY: 'auto', padding: '5px', border: '2px solid #0cd', borderRadius: '5px', margin: '10px' }}>
+                {submissions.length > 0 ? submissions.map(submission => (
+                    <div key={submission._id} style={{ margin: '10px', padding: '10px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '10px' }}>
+                        <div style={{ flexGrow: 1, display: 'flex', gap: '10px' }}>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '40%' }}>{submission.name || "No Name Given"}</span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '20%' }}>
+                                {submission.createdOn ? formatDate(submission.createdOn) : "No Date"}
+                            </span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '15%' }}>{submission.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Ready' ? 'black' : 'gray',
+                                    cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => {
+                                    console.log("view/edit", submission._id); navigate(/edit_submission/${submission._id})
+                                }}
+                                disabled={submission.status !== 'Ready'}
+                            >
+                                View/Edit
+                            </button>
+
+                            <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Ready')
+                                    handleRun(submission._id)
+                                else
+                                    console.log("Submission is not ready to run")
+
+                            }} disabled={submission.status !== 'Ready'}>Run</button>
+                            <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Executed') {
+                                    navigate(/view_results/${submission._id});
+                                }
+                            }} disabled={submission.status !== 'Executed'}>View Results</button>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Running' ? 'gray' : 'black',  // Changes color to gray when status is 'Running'
+                                    cursor: submission.status === 'Running' ? 'not-allowed' : 'pointer'  // Changes cursor to 'not-allowed' when status is 'Running'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => handleDelete(submission._id)}
+                                disabled={submission.status === 'Running'}  // Disables button when status is 'Running'
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+                    </div>
+                )) : (
+                    <div style={{
+                        borderRadius: "20px",
+                        padding: "10px",
+                        backgroundColor: "#f9f9f9",
+                        height: "430px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"  // This will center the text vertically
+                    }}>
+                        No submissions found
+                    </div>
+                )}
+            </div>
+            <div style={{ textAlign: 'left', paddingLeft: '20px', paddingTop: '20px' }}>
+                <StyledButton to={"/new_submission"}>New Problem</StyledButton>
+            </div>
+        </div>
+    );
+}
+
+export default Homepage;
+
+
+
+this is a snippet of the homepage part, i want you to make a button
+                <StyledButton to={"/my_credits"}>My Credits</StyledButton>
+but i want you to make it on the same line as "My submissions"
+and also create a div to display the users credits
+router.get('/view_temp_credits/:username', Controller.viewTempCredits);
+router.get('/view_credits/:username', Controller.viewCredits);
+so let me explain the difference between temp and actual credits
+our website is a SaaS that gives the user the ability to run programs that are really long. every time they run they cost one point, now, we cant actually charge the user if it hasnt been executed, so once the user presses run, we should check if they have enough temporary credits, and if thats the case subtract one point, then when the problem is solved, subtract one from the actual credits
+ChatGPT said:
+ChatGPT
+To achieve the layout you want, we can modify the code to place the "My Credits" button next to the "My submissions" header and also create a new section to display the user's credits. Here's how you can do it:
+
+javascript
+Copy code
+import React, { useState, useEffect } from 'react';
+
+const Homepage = () => {
+    const [credits, setCredits] = useState(0);
+    const [tempCredits, setTempCredits] = useState(0);
+
+    useEffect(() => {
+        const username = 'current_username'; // replace with actual username
+        fetch(`/view_credits/${username}`)
+            .then(response => response.json())
+            .then(data => setCredits(data.credits));
+
+        fetch(`/view_temp_credits/${username}`)
+            .then(response => response.json())
+            .then(data => setTempCredits(data.tempCredits));
+    }, []);
+
+    return (
+        <div style={{ textAlign: 'center', marginTop: '75px' }}>
+            <PageName name="Home Page" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
+                <h1 style={{ margin: 0 }}>My submissions</h1>
+                <StyledButton to={"/my_credits"}>My Credits</StyledButton>
+            </div>
+            <div style={{ marginTop: '10px', textAlign: 'left', paddingLeft: '20px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Your Credits:</div>
+                <div style={{ marginBottom: '10px' }}>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Available Credits: {credits}</span>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', marginLeft: '10px' }}>Temporary Credits: {tempCredits}</span>
+                </div>
+            </div>
+            <div style={{ maxHeight: '450px', overflowY: 'auto', padding: '5px', border: '2px solid #0cd', borderRadius: '5px', margin: '10px' }}>
+                {submissions.length > 0 ? submissions.map(submission => (
+                    <div key={submission._id} style={{ margin: '10px', padding: '10px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '10px' }}>
+                        <div style={{ flexGrow: 1, display: 'flex', gap: '10px' }}>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '40%' }}>{submission.name || "No Name Given"}</span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '20%' }}>
+                                {submission.createdOn ? formatDate(submission.createdOn) : "No Date"}
+                            </span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '15%' }}>{submission.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Ready' ? 'black' : 'gray',
+                                    cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => {
+                                    console.log("view/edit", submission._id); navigate(`/edit_submission/${submission._id}`)
+                                }}
+                                disabled={submission.status !== 'Ready'}
+                            >
+                                View/Edit
+                            </button>
+
+                            <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Ready')
+                                    handleRun(submission._id)
+                                else
+                                    console.log("Submission is not ready to run")
+
+                            }} disabled={submission.status !== 'Ready'}>Run</button>
+                            <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Executed') {
+                                    navigate(`/view_results/${submission._id}`);
+                                }
+                            }} disabled={submission.status !== 'Executed'}>View Results</button>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Running' ? 'gray' : 'black',  // Changes color to gray when status is 'Running'
+                                    cursor: submission.status === 'Running' ? 'not-allowed' : 'pointer'  // Changes cursor to 'not-allowed' when status is 'Running'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => handleDelete(submission._id)}
+                                disabled={submission.status === 'Running'}  // Disables button when status is 'Running'
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+                    </div>
+                )) : (
+                    <div style={{
+                        borderRadius: "20px",
+                        padding: "10px",
+                        backgroundColor: "#f9f9f9",
+                        height: "430px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"  // This will center the text vertically
+                    }}>
+                        No submissions found
+                    </div>
+                )}
+            </div>
+            <div style={{ textAlign: 'left', paddingLeft: '20px', paddingTop: '20px' }}>
+                <StyledButton to={"/new_submission"}>New Problem</StyledButton>
+            </div>
+        </div>
+    );
+}
+
+export default Homepage;
+Explanation:
+Credit Display:
+
+I added a useState hook to manage the credits and tempCredits.
+Added a useEffect hook to fetch the user's credits and temporary credits from the API endpoints /view_credits/:username and /view_temp_credits/:username and update the state.
+Button Placement:
+
+Wrapped the "My submissions" heading and the "My Credits" button in a div with display: 'flex' and justifyContent: 'space-between' to align them on the same line.
+Credits Section:
+
+Added a section below the "My submissions" header to display the user's available and temporary credits.
+This should provide a clear and functional interface where the user can see their available and temporary credits and have easy access to the "My Credits" page.
+
+
+
+
+
+
+You said:
+do it like here:
+
+            const response = await fetch(http://localhost:4000/delete?id=${id}, { method: 'DELETE' });
+            if (response.ok) {
+                console.log('Submission deleted successfully');
+            } else {
+                console.error('Failed to delete submission', await response.text());
+            }
+        } catch (error) {
+            console.error('Error deleting submission:', error);
+        }
+
+3/3
+
+ChatGPT said:
+ChatGPT
+Certainly! Here's how you can structure the credit fetching part using async/await to match the style you've provided:
+
+javascript
+Copy code
+import React, { useState, useEffect } from 'react';
+
+const Homepage = () => {
+    const [credits, setCredits] = useState(0);
+    const [tempCredits, setTempCredits] = useState(0);
+
+    useEffect(() => {
+        const fetchCredits = async () => {
+            try {
+                const username = 'current_username'; // replace with actual username
+                
+                const creditsResponse = await fetch(`/view_credits/${username}`);
+                if (creditsResponse.ok) {
+                    const creditsData = await creditsResponse.json();
+                    setCredits(creditsData.credits);
+                } else {
+                    console.error('Failed to fetch credits', await creditsResponse.text());
+                }
+
+                const tempCreditsResponse = await fetch(`/view_temp_credits/${username}`);
+                if (tempCreditsResponse.ok) {
+                    const tempCreditsData = await tempCreditsResponse.json();
+                    setTempCredits(tempCreditsData.tempCredits);
+                } else {
+                    console.error('Failed to fetch temporary credits', await tempCreditsResponse.text());
+                }
+            } catch (error) {
+                console.error('Error fetching credits:', error);
+            }
+        };
+
+        fetchCredits();
+    }, []);
+
+    return (
+        <div style={{ textAlign: 'center', marginTop: '75px' }}>
+            <PageName name="Home Page" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
+                <h1 style={{ margin: 0 }}>My submissions</h1>
+                <StyledButton to={"/my_credits"}>My Credits</StyledButton>
+            </div>
+            <div style={{ marginTop: '10px', textAlign: 'left', paddingLeft: '20px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Your Credits:</div>
+                <div style={{ marginBottom: '10px' }}>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px' }}>Available Credits: {credits}</span>
+                    <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', marginLeft: '10px' }}>Temporary Credits: {tempCredits}</span>
+                </div>
+            </div>
+            <div style={{ maxHeight: '450px', overflowY: 'auto', padding: '5px', border: '2px solid #0cd', borderRadius: '5px', margin: '10px' }}>
+                {submissions.length > 0 ? submissions.map(submission => (
+                    <div key={submission._id} style={{ margin: '10px', padding: '10px', border: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '10px' }}>
+                        <div style={{ flexGrow: 1, display: 'flex', gap: '10px' }}>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '40%' }}>{submission.name || "No Name Given"}</span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '20%' }}>
+                                {submission.createdOn ? formatDate(submission.createdOn) : "No Date"}
+                            </span>
+                            <span style={{ backgroundColor: '#f0f0f0', padding: '5px', borderRadius: '5px', width: '15%' }}>{submission.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Ready' ? 'black' : 'gray',
+                                    cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => {
+                                    console.log("view/edit", submission._id); navigate(`/edit_submission/${submission._id}`)
+                                }}
+                                disabled={submission.status !== 'Ready'}
+                            >
+                                View/Edit
+                            </button>
+
+                            <button style={{ ...buttonStyle, color: submission.status === 'Ready' ? 'black' : 'gray', cursor: submission.status === 'Ready' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Ready')
+                                    handleRun(submission._id)
+                                else
+                                    console.log("Submission is not ready to run")
+
+                            }} disabled={submission.status !== 'Ready'}>Run</button>
+                            <button style={{ ...buttonStyle, color: submission.status === 'Executed' ? 'black' : 'gray', cursor: submission.status === 'Executed' ? 'pointer' : 'not-allowed' }} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onClick={() => {
+                                if (submission.status === 'Executed') {
+                                    navigate(`/view_results/${submission._id}`);
+                                }
+                            }} disabled={submission.status !== 'Executed'}>View Results</button>
+                            <button
+                                style={{
+                                    ...buttonStyle,
+                                    color: submission.status === 'Running' ? 'gray' : 'black',  // Changes color to gray when status is 'Running'
+                                    cursor: submission.status === 'Running' ? 'not-allowed' : 'pointer'  // Changes cursor to 'not-allowed' when status is 'Running'
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                                onClick={() => handleDelete(submission._id)}
+                                disabled={submission.status === 'Running'}  // Disables button when status is 'Running'
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+                    </div>
+                )) : (
+                    <div style={{
+                        borderRadius: "20px",
+                        padding: "10px",
+                        backgroundColor: "#f9f9f9",
+                        height: "430px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"  // This will center the text vertically
+                    }}>
+                        No submissions found
+                    </div>
+                )}
+            </div>
+            <div style={{ textAlign: 'left', paddingLeft: '20px', paddingTop: '20px' }}>
+                <StyledButton to={"/new_submission"}>New Problem</StyledButton>
+            </div>
+        </div>
+    );
+}
+
+export default Homepage;
+Explanation:
+Async/Await for Fetching Credits:
+The fetchCredits function is defined as an async function and is used within the useEffect hook to fetch the user's credits and temporary credits.
+The await keyword is used before the fetch calls to ensure that the function waits for the fetch to complete before continuing.
+The function checks if the response is ok (status code in the range 200-299). If it is, the data is extracted and set in the state. If not, an error message is logged.
+This approach ensures that your credits are fetched asynchronously and any errors during the fetch are caught and logged, similar to how you handle errors in your provided code snippet.
+
+
+
+
+
+
+You said:
+Unchecked runtime.lastError: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+
+2/2
+
+ChatGPT said:
+ChatGPT
+The error message you're encountering typically occurs in Chrome extensions when a listener in a background script indicates that it will send a response asynchronously (by returning true), but the message channel (the communication link between scripts) is closed before the response is actually sent. This can happen due to a variety of reasons, such as:
+
+The Listener Did Not Send a Response:
+
+If you return true in your listener to indicate that you will send a response asynchronously, but you forget to call the sendResponse function, this error will occur.
+The Listener Took Too Long to Respond:
+
+If the listener takes too long to send the response (for example, due to a long-running operation or network request), the message channel may close before the response is sent.
+The Message Channel Was Closed Prematurely:
+
+If the message channel is closed (e.g., if the tab is closed or the extension is disabled) before the response is sent, you'll see this error.
+How to Fix It
+To fix this issue, ensure that:
+
+You Always Call sendResponse:
+
+If you return true in your listener, make sure that sendResponse is called in every possible code path, even in cases of error or exceptions.
+javascript
+Copy code
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'someMessage') {
+        // Indicate an asynchronous response
+        return true;
+
+        // Simulate an async operation
+        someAsyncOperation().then((result) => {
+            sendResponse({ success: true, data: result });
+        }).catch((error) => {
+            sendResponse({ success: false, error: error.message });
+        });
+    }
+});
+Handle Errors Gracefully:
+
+If an error occurs in your asynchronous operation, make sure to catch it and send a response back to avoid leaving the message hanging.
+Avoid Long-Running Operations:
+
+Try to avoid long-running operations in the listener if possible. If you must perform a lengthy task, consider using a setTimeout or Promise to manage the timing of your response.
+Check the Lifetime of the Message Channel:
+
+Be aware of when the message channel might close (e.g., when a tab is closed or an extension is reloaded). Ensure your code handles such scenarios gracefully.
+Example Fix
+Here's a more concrete example:
+
+javascript
+Copy code
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'fetchData') {
+        // Indicate an asynchronous response
+        let isAsync = true;
+        return isAsync;
+
+        // Fetch data from an API
+        fetch('https://api.example.com/data')
+            .then(response => response.json())
+            .then(data => {
+                sendResponse({ success: true, data });
+            })
+            .catch(error => {
+                sendResponse({ success: false, error: error.message });
+            });
+    }
+});
+In this example, the listener returns true to indicate that it will send a response asynchronously. Whether the fetch operation succeeds or fails, sendResponse is called, ensuring that the response is sent before the message channel closes.
+
+
+
+
+
+
+
+
+
+ChatGPT can make mistakes. Check important info.
+?
