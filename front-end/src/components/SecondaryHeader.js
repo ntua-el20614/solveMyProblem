@@ -3,29 +3,47 @@ import Cookies from 'js-cookie';
 
 export const PageName = ({ name }) => {
     const [time, setTime] = useState(new Date().toLocaleTimeString('en-GB'));
-    const [status, setStatus] = useState(false);
+    const [statusColor, setStatusColor] = useState('#00FF00'); // Default to red
 
     useEffect(() => {
         const fetchHealth = async () => {
+            const urls = [
+                'http://localhost:4000/health',
+                'http://localhost:4001/health',
+                'http://localhost:4002/health'
+            ];
+
             try {
-                const response = await fetch('http://localhost:4001/health');
-                const data = await response.json();
-                setStatus(data.message === "Login microservice is healthy");
+                const results = await Promise.all(urls.map(url =>
+                    Promise.race([
+                        fetch(url).then(response => response.json()).catch(() => ({ message: 'offline' })), // Handle fetch errors
+                        new Promise(resolve => setTimeout(() => resolve({ message: 'offline' }), 1000)) // 1 second timeout
+                    ])
+                ));
+
+                const allHealthy = results.every(r => r.message.includes('healthy'));
+                const allOffline = results.every(r => r.message === 'offline');
+
+                if (allHealthy) {
+                    setStatusColor('#00FF00'); // Green
+                } else if (allOffline) {
+                    setStatusColor('#FF0000'); // Red
+                } else {
+                    setStatusColor('#FFA500'); // Orange
+                }
             } catch (error) {
-                setStatus(false);
+                setStatusColor('#FFA500'); // Set to orange if an error occurs
             }
         };
 
-        fetchHealth();
-        const timer = setInterval(() => {
+        const healthCheckInterval = setInterval(fetchHealth, 1000); // Checking health every second
+        const timeInterval = setInterval(() => {
             setTime(new Date().toLocaleTimeString('en-GB'));
-        }, 1000);
-
-        const healthCheckInterval = setInterval(fetchHealth, 30000);
+        }, 1000); // Updating time every second
 
         return () => {
-            clearInterval(timer);
             clearInterval(healthCheckInterval);
+            clearInterval(timeInterval);
         };
     }, []);
 
@@ -72,7 +90,7 @@ export const PageName = ({ name }) => {
                         width: '10px',
                         borderRadius: '50%',
                         border: '1.5px solid black',
-                        backgroundColor: status ? '#00FF00' : '#FF0000'
+                        backgroundColor: statusColor
                     }} />
                 </div>
                 <button onClick={handleLogout} style={{
