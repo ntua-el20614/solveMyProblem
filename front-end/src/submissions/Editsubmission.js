@@ -162,7 +162,8 @@ function EditSubmission() {
             const results = await response.json();
             const result = results.find(result => result._id === id);
             if (result) {
-                if (result.status === 'in-queue') {
+                console.log('Result found:', result.status);
+                if (result.status === 'in-queue' || result.status === 'in-progress') {
                     setViewMode(true);
                 }
                 setData(result);

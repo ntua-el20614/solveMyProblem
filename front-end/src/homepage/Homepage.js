@@ -260,8 +260,8 @@ function Homepage() {
                             <button
                                 style={{
                                     ...buttonStyle,
-                                    color: !(submission.status !== 'Ready' && (submission.status !== 'In Queue')) ? 'black' : 'gray',
-                                    cursor: !(submission.status !== 'Ready' && (submission.status !== 'In Queue')) ? 'pointer' : 'not-allowed'
+                                    color: !(submission.status !== 'Ready' && (submission.status !== 'In Queue' && submission.status !== 'Running')) ? 'black' : 'gray',
+                                    cursor: !(submission.status !== 'Ready' && (submission.status !== 'In Queue' && submission.status !== 'Running')) ? 'pointer' : 'not-allowed'
                                 }}
                                 onMouseDown={handleMouseDown}
                                 onMouseUp={handleMouseUp}
@@ -269,10 +269,10 @@ function Homepage() {
                                 onClick={() => {
                                     console.log("view/edit", submission._id); navigate(`/edit_submission/${submission._id}`)
                                 }}
-                                disabled={submission.status !== 'Ready' && (submission.status !== 'In Queue')}
+                                disabled={submission.status !== 'Ready' && (submission.status !== 'In Queue' && submission.status !== 'Running')}
                             >
                                 {
-                                    (submission.status === 'In Queue') ? 'View' : 'Edit'
+                                    (submission.status === 'In Queue' || submission.status === 'Running') ? 'View' : 'Edit'
                                 }
                             </button>
 
@@ -291,14 +291,14 @@ function Homepage() {
                             <button
                                 style={{
                                     ...buttonStyle,
-                                    color: submission.status === 'Running' ? 'gray' : 'black',  // Changes color to gray when status is 'Running'
-                                    cursor: submission.status === 'Running' ? 'not-allowed' : 'pointer'  // Changes cursor to 'not-allowed' when status is 'Running'
+                                    color: (submission.status === 'Running' || submission.status === 'In Queue') ? 'gray' : 'black',  // Changes color to gray when status is 'Running'
+                                    cursor: (submission.status === 'Running' || submission.status === 'In Queue') ? 'not-allowed' : 'pointer'  // Changes cursor to 'not-allowed' when status is 'Running'
                                 }}
                                 onMouseDown={handleMouseDown}
                                 onMouseUp={handleMouseUp}
                                 onMouseLeave={handleMouseUp}
                                 onClick={() => handleDelete(submission._id, submission.status)}
-                                disabled={submission.status === 'Running'}  // Disables button when status is 'Running'
+                                disabled={submission.status === 'Running' || submission.status === 'In Queue'}  // Disables button when status is 'Running'
                             >
                                 Delete
                             </button>
