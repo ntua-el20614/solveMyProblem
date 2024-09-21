@@ -12,7 +12,14 @@ const colors = {
 
 function Header({ username = '' }) {
     const isLoggedIn = !!Cookies.get('user_SMP');
-
+    if (!isLoggedIn && ( 
+        window.location.pathname !== '/'
+        && window.location.pathname !== '/register'
+        && window.location.pathname !== '/login'
+    )) {
+        //redirect to login page
+        window.location.href = '/';
+    }
     return (
         <header style={{ 
             backgroundColor: colors.primary, 
