@@ -61,6 +61,9 @@ exports.finalSubmition = async (req, res, next) => {
   }
 };
 
+exports.getHealth = async (req, res, next) => {
+  res.status(200).json({ message: 'Edit view run microservice is healthy' });
+};
 exports.deleteProblem = async (req, res, next) => {
   const { id } = req.query;
   try{
