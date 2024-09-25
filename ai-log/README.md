@@ -7,6 +7,6 @@ The script facilitates data collection, processing, and archiving related to var
 1. Add a .txt file that contains the log (prompt) of the A.I. used
 2. Run the script using the command: `python ai_log.py`
 3. Follow the on-screen prompts to complete the logging process.
-4. Extract the .zip file and submit it to `galileo.softlab.ntua.gr:3001`
+4. Extract the .zip file and submit it to `https://ailog.softlab.ntua.gr/`
 
 **Note that you have to be @ntua, otherwise use a vpn**
