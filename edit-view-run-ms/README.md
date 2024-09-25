@@ -40,9 +40,13 @@ RABBITMQ_URL=<Your RabbitMQ URL>
 ```
 ## Docker Support
 
-**Ensure that RabbitMQ is running in a Docker container**
+1. **Ensure that RabbitMQ is running in a Docker container**
 ```bash
 docker run -d --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+```
+2. **Ensure that MongoDB is running in a Docker container**
+```bash
+docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=<username> -e MONGO_INITDB_ROOT_PASSWORD=<password> mongo
 ```
 
 ## Running the Application
