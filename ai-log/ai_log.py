@@ -83,7 +83,7 @@ def get_next_filename(phase, directory="."):
 
 def log_chat(filename,prompt_filename):
     print("If you dont want a prompt write \"No prompt\"")
-    chat_log_path = prompt_filename #input("Enter the name of your log file (without .txt): ")
+    chat_log_path = input("Enter the name of your log file (without .txt): ")
     #prompt_filename
     #chat_log_path="logger.txt"
     if chat_log_path == "No prompt":
