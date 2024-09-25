@@ -5,50 +5,64 @@ import zipfile
 
 def run_survey():
     data = {
-        "answers": {
-            "phase": ["requirements gathering", "requirements specification", "architecture", "design", "coding", "testing", "deployment"],
-            "action": ["problem understanding", "stakeholder statement", "requirements (functional)", "requirements (non-functional)", "use case specification", "architectural decision", "design decision", "data design", "source code authoring", "unit testing", "functional testing", "integration testing", "performance testing", "other testing", "dev-ops", "vm operations", "container operations", "network operations", "code management"],
-            "scope": ["documentation (text)", "uml activity", "uml sequence", "uml component", "uml deployment", "uml class", "uml other", "database design", "frontend", "data management", "backend", "api", "cli", "test cases", "test code driver", "test execution scripts", "deployment scripts", "code management actions"],
-            "action experience": ["big", "fair", "little", "none"],
-            "prog lang": ["n/a", "js", "js-node", "python", "sql", "nosql db", "java", "other"],
-            "other prog lang": "<fill in>",
-            "tool": ["chat gpt 3.x", "chat gpt 4.x", "bard", "github copilot", "scribe", "intellij IDEA", "other"],
-            "other tool": "<fill in>",
-            "tool option": ["free", "free trial", "full"],
-            "tool experience": ["none", "some", "enough", "master"],
-            "time allocated (h)": "<fill in>",
-            "time saved estimate (h)": "<fill in>", 
-            "quality of ai help": ["ready-to-use", "minor modifications needed", "major modifications needed", "unusable"],
-            "generic feeling": ["great as-is", "great in the future", "needs work", "makes not sense"],
-            "notes": "<fill in>"
-        }
+
+    "answers": {
+        "phase": ["architecture", "design", "coding", "deployment"],
+        "action": ["microservices definition", "api design", "orchestration design", "choreography design", "data design", "container structuring", "source code authoring", "network operations", "code management"],
+        "scope": ["uml sequence", "uml component", "uml deployment", "uml other", "data management", "frontend", "backend", "api", "messaging design", "messaging deployment", "container configuration", "deployment scripts", "github operations"],
+        "action experience": [0, 1, 2, 3, 4, 5],
+        "prog lang": ["n/a", "js", "js-node", "python", "sql", "nosql", "java", "yaml/json", "other"],
+        "other prog lang": "<fill_in>",
+        "aimodel": ["chatgpt"],
+        "aimodel version": ["4.0"],
+        "lmstudio-hosted aimodel": ["No"],
+        "tool option": ["online full"],
+        "experience with tool": [5],
+        "time allocated (h)": "<fill_in>",
+        "time saved estimate (h)": "<fill_in>", 
+        "quality of ai help": [0, 1, 2, 3, 4, 5],
+        "knowledge acquired": [0, 1, 2, 3, 4, 5],
+        "generic feeling - now": [0, 1, 2, 3, 4, 5],
+        "generic feeling - future": [0, 1, 2, 3, 4, 5],
+        "threat level": [5],
+        "notes": "<fill_in>"
+    }
     }
 
     responses = {}
     max_length=0
     for key, options in data["answers"].items():
         print()
-        if options == "<fill in>":
+        if options == "<fill_in>":
             response = input(f"Enter your response for {key}: ")
             if len(response) == 0:
-                response="<fill in>"
+                response="None"
+        elif len(options)==1:
+            #if there is only one choice
+            response=options[0]
+            #continue
+
         else:
             title = f"Choose an option for {key}:"
             print(title)
-            for _ in title: 
-                print("_",end="")
-            print()
-            for i, option in enumerate(options, start=1):
-                choice_for_user = (f"{option} ({i})")
-                print(choice_for_user)
-                if len(choice_for_user)>max_length:
-                    max_length=len(choice_for_user)
-            for grammi in range(max_length):
-                print("_",end="")
-            print()
+            print("_" * len(title))
+            
+            for i, option in enumerate(options):
+                # Display the same value and index for numeric lists, otherwise use default index
+                if isinstance(option, int):  # If the option is a number, index matches the option
+                    print(f"{option} ({option})")
+                else:
+                    print(f"{option} ({i + 1})")
+                #max_length=max(max_length,len(str(option)))
+            print("_" * len(title))
+            
             choice = int(input("Your choice (number): "))
-            response = options[choice - 1]
-        
+            
+            if isinstance(options[0], int):  # If it's a numeric list, index directly maps to the value
+                response = choice  # The choice is the value itself
+            else:
+                response = options[choice - 1]  # Otherwise, get the option based on index
+            
         responses[key] = response
         print()
 
@@ -67,9 +81,10 @@ def get_next_filename(phase, directory="."):
     next_order = max_order + 1
     return f"{phase}_{next_order}.json"
 
-def log_chat(filename):
+def log_chat(filename,prompt_filename):
     print("If you dont want a prompt write \"No prompt\"")
-    chat_log_path = input("Enter the name of your log file (without .txt): ")
+    chat_log_path = prompt_filename #input("Enter the name of your log file (without .txt): ")
+    #prompt_filename
     #chat_log_path="logger.txt"
     if chat_log_path == "No prompt":
         return False
@@ -118,7 +133,7 @@ print(f"Responses saved to {filename}")
 
 # Generate prompt filename with correct extension
 prompt = f"prompt_{filename[:-5]}.txt"
-done = log_chat(filename[:-5])  # Pass the base filename without .json extension
+done = log_chat(filename[:-5],prompt)  # Pass the base filename without .json extension
 
 # Zip the files
 if done:
@@ -143,4 +158,5 @@ else:
         print("Files not found. It may have already been deleted or never existed.")
 
 
-print("Visit galileo.softlab.ntua.gr:3001 to submit the zipped file")
+print("Visit https://ailog.softlab.ntua.gr/ to submit the zipped file")
+
