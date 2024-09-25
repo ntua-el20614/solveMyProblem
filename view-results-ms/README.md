@@ -33,13 +33,17 @@ RABBITMQ_URL=<Your RabbitMQ URL>
 
 ## Docker Support
 
-1. **Ensure that RabbitMQ is running in a Docker container**
+1. **Create the Network** 
 ```bash
-docker run -d --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+docker network create app-network
 ```
-2. **Ensure that MongoDB is running in a Docker container**
+2. **Ensure that RabbitMQ is running in a Docker container**
 ```bash
-docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=<username> -e MONGO_INITDB_ROOT_PASSWORD=<password> mongo
+docker run -d --network app-network --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:management
+```
+3. **Ensure that MongoDB is running in a Docker container**
+```bash
+docker run -d --network app-network --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=<username> -e MONGO_INITDB_ROOT_PASSWORD=<password> mongo
 ```
 
 ## Running the Application
@@ -50,5 +54,5 @@ docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=<usern
 
 ```bash
 docker build -t view-results-ms .
-docker run -p 7002:7002 --env-file .env --name view-results-ms view-results-ms
+docker run -p 7002:7002 --env-file .env --network app-network --name view-results-ms view-results-ms
 ```
