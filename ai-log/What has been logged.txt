@@ -1,1 +1,10 @@
 architecture_1
+architecture_2
+coding_1
+coding_2
+coding_3
+coding_4
+coding_5
+coding_6
+coding_7
+coding_8
