@@ -147,6 +147,6 @@ This document provides a detailed overview of the issues and progress for the *s
 ---
 
 ### Additional Notes:
-For a detailed list of all issues and their status, please refer to our GitHub [Project Board](#). Each issue is tagged appropriately based on its status, priority, and related sprint.
+For a detailed list of all issues and their status, please refer to our GitHub [Issue History](https://github.com/ntua-el20614/solveMyProblem/issues?q=is%3Aissue+is%3Aclosed). Each issue is tagged appropriately based on its status, priority, and related sprint.
 
 ---
