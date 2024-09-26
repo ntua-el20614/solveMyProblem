@@ -37,7 +37,7 @@ This document provides a detailed overview of the issues and progress for the *s
 - **Edit Submission**  
   - *Description*: Create an endpoint to edit submissions and modify the existing one to retrieve the problem from the database.
 
-## Sprint 3: RabbitMQ Integration, Backend/Frontend Enhancements (02/08/24-29/09/24)
+## Sprint 3: RabbitMQ Integration, Backend/Frontend Enhancements (02/08/24-26/08/24)
 
 ### Issues:
 - **Documentation of Backend Endpoints**  
@@ -100,7 +100,7 @@ This document provides a detailed overview of the issues and progress for the *s
 - **Endpoints for Credits**  
   - *Description*: Create two endpoints to handle user credits and temporary credits as URL parameters.
 
-## Sprint 4: Final Stretch, Fixes, and Optimizations (30/09/24-26/09/24)
+## Sprint 4: Final Stretch, Fixes, and Optimizations (28/08/24-26/09/24)
 
 ### Issues:
 - **Fix Code Structure**  
